@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFEEEA;font-family:Inter,system-ui,sans-serif}
+a{color:#4F46E5}a:hover{color:#4338CA}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 Inter,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Inter,sans-serif;color:rgba(0,0,0,.55)}
+.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#4F46E5;color:#fff}
+.dv-next{margin:22px 0 0;font:12px/1.5 Inter,sans-serif;color:rgba(0,0,0,.5)}
+.dv-sub{font:600 11px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.45);margin:26px 0 14px}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Gantt lengkap — subtasks 2 level, semua dependency terlihat, critical path, dan state drag &amp; drop</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a">
+  <div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Header hari (M T W T F S S) + subtask &amp; sub-subtask, dependency FS, critical path merah, parent sedang di-drag (ghost + tooltip + popover), resize handles</div>
+  <div class="dv-card" style="width:1604px">
+    <div style="background:#FFFFFF">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #ECECF1">
+        <div style="display:flex;background:#F4F4F6;border-radius:8px;padding:2px;gap:1px">
+          <span style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;background:#fff;color:#18181B;box-shadow:0 1px 2px rgba(0,0,0,.08)">Gantt</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">List</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Board</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Calendar</span>
+        </div>
+        <span style="font-size:11px;color:#52525B;border:1px dashed #D4D4D8;border-radius:99px;padding:4px 10px">Filter</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <span style="font-size:10.5px;font-weight:600;color:#DC2626;border:1px solid #FCA5A5;background:#FEF2F2;border-radius:8px;padding:5px 10px">Critical path: ON</span>
+          <div style="display:flex;background:#F4F4F6;border-radius:7px;padding:2px;font-size:10.5px;font-weight:500;color:#71717A"><span style="padding:3px 8px;background:#fff;border-radius:5px;color:#18181B;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)">Day</span><span style="padding:3px 8px">Week</span><span style="padding:3px 8px">Month</span></div>
+        </div>
+      </div>
+      <div style="display:flex">
+        <div style="width:480px;flex:none;border-right:2px solid #E4E4E9">
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;font-size:10px;font-weight:600;color:#71717A;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:44px;align-items:end">
+            <span style="padding:7px 10px;border-right:1px solid #ECECF1">Task</span><span style="padding:7px 6px;border-right:1px solid #ECECF1">Who</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Status</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Start</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Due</span><span style="padding:7px 8px">%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Site Preparation<span style="font-weight:500;color:#A1A1AA;font-size:10px">4</span></span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 6</span><span style="padding:0 8px;color:#52525B">Aug 7</span><span style="padding:0 8px;color:#52525B">58</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B">Land clearing &amp; grading</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#0891B2;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">AW</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DCFCE7;color:#15803D">Done</span></span><span style="padding:0 8px;color:#52525B">Jul 6</span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#52525B">100</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Permit finalization (IMB)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#D97706;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">SR</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#FEF3C7;color:#B45309">At risk</span></span><span style="padding:0 8px;color:#52525B">Jul 13</span><span style="padding:0 8px;color:#52525B">Jul 24</span><span style="padding:0 8px;color:#52525B">35</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#71717A" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Utility rerouting (PLN)<span style="font-weight:500;color:#A1A1AA;font-size:10px">1</span></span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#6366F1;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">BS</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 16</span><span style="padding:0 8px;color:#52525B">Jul 29</span><span style="padding:0 8px;color:#52525B">60</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 42px;color:#3F3F46">PLN approval &amp; energize</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#6366F1;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">BS</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Jul 23</span><span style="padding:0 8px;color:#52525B">Jul 29</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#EEF0FE;height:32px;position:relative;outline:1.5px solid #6366F1;outline-offset:-1.5px"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Machine Relocation<span style="font-weight:500;color:#A1A1AA;font-size:10px">3</span></span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#4F46E5;font-weight:600">Aug 5</span><span style="padding:0 8px;color:#4F46E5;font-weight:600">Aug 30</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B">Line 3 disassembly</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#16A34A;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">DP</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 3</span><span style="padding:0 8px;color:#52525B">Aug 12</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B">Transport &amp; rigging</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#BE185D;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">RH</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 13</span><span style="padding:0 8px;color:#52525B">Aug 19</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B">Line 3 reassembly</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#16A34A;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">DP</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 20</span><span style="padding:0 8px;color:#52525B">Aug 27</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;position:relative"><span style="position:absolute;left:0;top:4px;bottom:4px;width:3px;background:#DC2626;border-radius:2px"></span>
+            <span style="padding:0 10px 0 26px;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="#7C3AED" stroke="none"><path d="M12 2l4 10-4 10-4-10z" transform="rotate(90 12 12)"></path></svg>Production restart</span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Milestone</span></span><span style="padding:0 8px;color:#52525B">Aug 28</span><span style="padding:0 8px;color:#52525B">Aug 28</span><span style="padding:0 8px;color:#52525B">—</span>
+          </div>
+          <div style="display:flex;align-items:center;height:32px;padding:0 10px;color:#A1A1AA;font-size:11.5px">＋ Add task…</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative;overflow:hidden">
+          <div style="display:flex;border-bottom:1px solid #ECECF1;background:#FAFAFB;font-size:10px;font-weight:600;color:#52525B;height:19px;align-items:center">
+            <span style="width:520px;flex:none;padding:0 8px;border-right:1px solid #ECECF1">July 2026</span><span style="flex:1;padding:0 8px;white-space:nowrap">August 2026</span>
+          </div>
+          <!-- 56 days: Mon Jul 6 → Sun Aug 30, 20px each -->
+          <div style="display:flex;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:25px;font-weight:600">
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">6</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">7</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">8</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">9</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;font-weight:700;color:#6366F1;line-height:1">F</span><span style="font-size:9px;font-weight:700;color:#fff;line-height:1.3;background:#6366F1;border-radius:99px;padding:0 4px">10</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">11</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">12</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">13</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">14</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">15</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">16</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">17</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">18</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">19</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">20</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">21</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">22</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">23</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">24</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">25</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">26</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">27</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">28</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">29</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">30</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #ECECF1"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">31</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">1</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">2</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">3</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">4</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">5</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">6</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">7</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">8</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">9</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">10</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">11</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">12</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">13</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">14</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">15</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">16</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">17</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">18</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">19</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">20</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">F</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">21</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">22</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">23</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">M</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">24</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">25</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">W</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">26</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;color:#A1A1AA;line-height:1">T</span><span style="font-size:9px;color:#3F3F46;line-height:1.2">27</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6"><span style="font-size:7px;font-weight:700;color:#7C3AED;line-height:1">F</span><span style="font-size:9px;font-weight:700;color:#7C3AED;line-height:1.2">28</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F4F4F6;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">29</span></span>
+            <span style="width:20px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#EFEFF2"><span style="font-size:7px;color:#A1A1AA;line-height:1">S</span><span style="font-size:9px;color:#A1A1AA;line-height:1.2">30</span></span>
+          </div>
+          <!-- Canvas 56 days × 20px = 1120; weekly band Sat+Sun 100–140 of each 140; rows 32px -->
+          <div style="position:relative;height:320px;background:repeating-linear-gradient(90deg,transparent 0 100px,rgba(24,24,27,.05) 100px 140px),repeating-linear-gradient(90deg,transparent 0 19px,#F7F7F9 19px 20px)">
+            <div style="position:absolute;top:0;bottom:0;left:90px;width:2px;background:#EF4444;z-index:3"><span style="position:absolute;top:2px;left:-16px;font-size:8px;font-weight:700;color:#fff;background:#EF4444;border-radius:3px;padding:1px 4px">TODAY</span></div>
+            <!-- Dependencies -->
+            <svg width="100%" height="320" style="position:absolute;inset:0;z-index:2;pointer-events:none">
+              <!-- Land clearing → Utility rerouting (critical) -->
+              <path d="M 200 48 L 208 48 L 208 84 L 190 84 L 190 112 L 196 112" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 199 112 l -6 -4 v 8 z" fill="#DC2626"></path>
+              <!-- Utility → PLN approval (critical, parent→child chain) -->
+              <path d="M 340 123 L 340 139 L 337 139" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 340 141 l -4 -6 h 8 z" fill="#DC2626" transform="translate(0,2)"></path>
+              <!-- PLN approval → Line 3 disassembly (critical) -->
+              <path d="M 480 144 L 496 144 L 496 204 L 556 204" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 559 204 l -6 -4 v 8 z" fill="#DC2626"></path>
+              <!-- Permit → Line 3 disassembly (non-critical, gray) -->
+              <path d="M 380 80 L 512 80 L 512 212 L 556 212" fill="none" stroke="#A1A1AA" stroke-width="1.5" stroke-dasharray="3 3"></path><path d="M 559 212 l -6 -4 v 8 z" fill="#A1A1AA"></path>
+              <!-- Disassembly → Transport (critical) -->
+              <path d="M 760 208 L 768 208 L 768 224 L 752 224 L 752 240 L 757 240" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 760 240 l -6 -4 v 8 z" fill="#DC2626"></path>
+              <!-- Transport → Reassembly (critical) -->
+              <path d="M 900 240 L 908 240 L 908 256 L 892 256 L 892 272 L 897 272" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 900 272 l -6 -4 v 8 z" fill="#DC2626"></path>
+              <!-- Reassembly → Milestone (critical) -->
+              <path d="M 1060 272 L 1070 272 L 1070 293" fill="none" stroke="#DC2626" stroke-width="1.5"></path><path d="M 1070 297 l -4 -6 h 8 z" fill="#DC2626"></path>
+              <!-- connector dots on hover (shown on Utility) -->
+              <circle cx="200" cy="112" r="3.5" fill="#fff" stroke="#6366F1" stroke-width="1.5"></circle>
+              <circle cx="480" cy="112" r="3.5" fill="#fff" stroke="#6366F1" stroke-width="1.5"></circle>
+            </svg>
+            <!-- r0 Site Prep summary (bracket) Jul 6–Aug 7 -->
+            <div style="position:absolute;top:10px;left:0px;width:660px;height:12px;z-index:1"><div style="position:absolute;inset:0;background:#3F3F46;border-radius:3px"></div><div style="position:absolute;left:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div><div style="position:absolute;right:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div></div>
+            <!-- r1 Land clearing Jul 6–15 (critical: red ring) -->
+            <div style="position:absolute;top:37px;left:0px;width:200px;height:22px;background:#22C55E;border-radius:6px;display:flex;align-items:center;gap:5px;padding:0 7px;z-index:1;box-shadow:0 0 0 1.5px #DC2626"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg><span style="font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Land clearing</span></div>
+            <!-- r2 Permit Jul 13–24 (non-critical) -->
+            <div style="position:absolute;top:69px;left:140px;width:240px;height:22px;border-radius:6px;background:#FDE68A;z-index:1"><div style="position:absolute;inset:0;width:35%;background:#F59E0B;border-radius:6px 0 0 6px"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#78350F">Permit (IMB) ⚠</span></div>
+            <!-- r3 Utility Jul 16–29 (critical) -->
+            <div style="position:absolute;top:101px;left:200px;width:280px;height:22px;border-radius:6px;background:#BFDBFE;z-index:1;box-shadow:0 0 0 1.5px #DC2626"><div style="position:absolute;inset:0;width:60%;background:#3B82F6;border-radius:6px 0 0 6px"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25)">Utility rerouting (PLN) · 60%</span></div>
+            <!-- r4 PLN approval Jul 23–29 (sub-subtask, critical) -->
+            <div style="position:absolute;top:133px;left:340px;width:140px;height:22px;border-radius:6px;background:#E0E7FF;border:1px solid #A5B4FC;z-index:1;box-shadow:0 0 0 1.5px #DC2626"><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#4338CA">PLN approval</span></div>
+            <!-- r5 Machine Reloc parent — DRAGGING: ghost at original (Aug 3, x560), solid shifted +2d (x600) -->
+            <div style="position:absolute;top:170px;left:560px;width:520px;height:12px;border:1.5px dashed #A1A1AA;border-radius:3px;z-index:1"></div>
+            <div style="position:absolute;top:170px;left:600px;width:520px;height:12px;z-index:2;cursor:grabbing"><div style="position:absolute;inset:0;background:#4F46E5;border-radius:3px;box-shadow:0 4px 12px rgba(79,70,229,.4)"></div><div style="position:absolute;left:0;bottom:-4px;width:3px;height:8px;background:#4F46E5"></div><div style="position:absolute;right:0;bottom:-4px;width:3px;height:8px;background:#4F46E5"></div></div>
+            <div style="position:absolute;top:145px;left:700px;background:#18181B;color:#fff;font-size:9.5px;border-radius:6px;padding:4px 8px;z-index:4;box-shadow:0 4px 12px rgba(0,0,0,.25);white-space:nowrap">Aug 5 → Aug 30 <span style="color:#A5B4FC">＋2d</span></div>
+            <!-- Parent-drag popover -->
+            <div style="position:absolute;top:190px;left:620px;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid #E4E4E9;border-radius:12px;box-shadow:0 12px 32px rgba(24,24,27,.18);padding:12px 14px;width:250px">
+              <div style="font-size:11.5px;font-weight:700;color:#18181B;margin-bottom:2px">Move 3 subtasks with it?</div>
+              <div style="font-size:10px;color:#71717A;margin-bottom:9px">Line 3 disassembly, Transport &amp; rigging, Line 3 reassembly will shift ＋2 days.</div>
+              <div style="display:flex;gap:6px;margin-bottom:8px">
+                <span style="flex:none;font-size:10.5px;font-weight:600;color:#fff;background:#6366F1;border-radius:7px;padding:5px 10px;box-shadow:0 1px 2px rgba(99,102,241,.4)">Move together</span>
+                <span style="flex:none;font-size:10.5px;font-weight:600;color:#3F3F46;border:1px solid #E4E4E9;border-radius:7px;padding:5px 10px;background:#fff">Keep subtasks in place</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;font-size:10px;color:#71717A"><span style="width:11px;height:11px;border:1.5px solid #C4C4CC;border-radius:3px;flex:none"></span>Remember my choice</div>
+            </div>
+            <!-- r6 Disassembly Aug 3–12 (critical) -->
+            <div style="position:absolute;top:197px;left:560px;width:200px;height:22px;border-radius:6px;background:#E4E4E7;z-index:1;box-shadow:0 0 0 1.5px #DC2626"><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#52525B">Line 3 disassembly</span></div>
+            <!-- r7 Transport Aug 13–19 (critical, selected + resize handles) -->
+            <div style="position:absolute;top:229px;left:760px;width:140px;height:22px;border-radius:6px;background:#E4E4E7;z-index:1;box-shadow:0 0 0 1.5px #DC2626,0 0 0 3px rgba(99,102,241,.35)"><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#52525B">Transport</span><span style="position:absolute;left:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span><span style="position:absolute;right:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span></div>
+            <!-- r8 Reassembly Aug 20–27 (critical) -->
+            <div style="position:absolute;top:261px;left:900px;width:160px;height:22px;border-radius:6px;background:#E4E4E7;z-index:1;box-shadow:0 0 0 1.5px #DC2626"><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#52525B">Line 3 reassembly</span></div>
+            <!-- r9 Milestone Aug 28 -->
+            <div style="position:absolute;top:296px;left:1062px;z-index:1"><div style="width:16px;height:16px;background:#7C3AED;transform:rotate(45deg);border-radius:3px;box-shadow:0 0 0 1.5px #DC2626"></div><span style="position:absolute;right:24px;top:1px;font-size:10px;font-weight:600;color:#52525B;white-space:nowrap">Production restart</span></div>
+          </div>
+          <!-- Legend -->
+          <div style="display:flex;align-items:center;gap:16px;height:31px;padding:0 12px;border-top:1px solid #ECECF1;background:#FAFAFB;font-size:9.5px;color:#71717A">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:18px;height:10px;border-radius:3px;background:#E4E4E7;box-shadow:0 0 0 1.5px #DC2626"></span>Critical path</span>
+            <span style="display:flex;align-items:center;gap:5px"><svg width="22" height="10" viewBox="0 0 22 10"><path d="M1 5 H16" stroke="#DC2626" stroke-width="1.5" fill="none"></path><path d="M20 5 l-6 -3.5 v7 z" fill="#DC2626"></path></svg>Dependency (FS)</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:18px;height:10px;border-radius:3px;border:1.5px dashed #A1A1AA"></span>Posisi asli saat drag</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:11px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span>Resize handle (ubah start/due)</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:14px;height:8px;background:#EFEFF2;border:1px solid #E4E4E9"></span>Sat/Sun</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<p class="dv-next">Try next: "oke, build full app pakai format <a class="dv-oid" href="#4a">4a</a> + tema <a class="dv-oid" href="#1a">1a</a>" · "arah panah dependency kurang jelas, perbesar" · "tunjukkan state setelah klik Move together"</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname"><a class="dv-oid" href="#1d">1d</a> unchanged — only the timeline header swapped to Month → Date + day initial; drag, resize handles, tooltip &amp; dependencies stay</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a">
+  <div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>= <a class="dv-oid" href="#1d">1d</a> with day-scale header (M T W T F S S), Sat/Sun shaded — everything else identical</div>
+  <div class="dv-card" style="width:1240px">
+    <div style="background:#FFFFFF">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #ECECF1">
+        <div style="display:flex;background:#F4F4F6;border-radius:8px;padding:2px;gap:1px">
+          <span style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;background:#fff;color:#18181B;box-shadow:0 1px 2px rgba(0,0,0,.08)">Gantt</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">List</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Board</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Calendar</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Workload</span>
+        </div>
+        <span style="font-size:11px;color:#52525B;border:1px dashed #D4D4D8;border-radius:99px;padding:4px 10px">Filter</span>
+        <span style="font-size:11px;color:#52525B;border:1px solid #E4E4E9;border-radius:99px;padding:4px 10px">Group: Phase</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <div style="display:flex;background:#F4F4F6;border-radius:7px;padding:2px;font-size:10.5px;font-weight:500;color:#71717A"><span style="padding:3px 8px;background:#fff;border-radius:5px;color:#18181B;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)">Day</span><span style="padding:3px 8px">Week</span><span style="padding:3px 8px">Month</span><span style="padding:3px 8px">Qtr</span></div>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#7C3AED;border:1px solid #DDD6FE;background:#F5F3FF;border-radius:8px;padding:5px 10px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z"></path></svg>Auto-schedule</span>
+        </div>
+      </div>
+      <div style="display:flex">
+        <div style="width:480px;flex:none;border-right:2px solid #E4E4E9">
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;font-size:10px;font-weight:600;color:#71717A;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:44px;align-items:end">
+            <span style="padding:7px 10px;border-right:1px solid #ECECF1">Task</span><span style="padding:7px 6px;border-right:1px solid #ECECF1">Who</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Status</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Start</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Due</span><span style="padding:7px 8px">%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Site Preparation</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 1</span><span style="padding:0 8px;color:#52525B">Aug 14</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">62</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Land clearing &amp; grading</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#0891B2;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">AW</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DCFCE7;color:#15803D">Done</span></span><span style="padding:0 8px;color:#52525B">Jul 1</span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">100</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;background:#EEF0FE;outline:1.5px solid #6366F1;outline-offset:-1.5px">
+            <span style="padding:0 10px 0 26px;color:#18181B;font-weight:500">Utility rerouting (PLN)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#6366F1;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">BS</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 8</span><span style="padding:0 8px;color:#52525B">Aug 1</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">60</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Permit finalization (IMB)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#D97706;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">SR</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#FEF3C7;color:#B45309">At risk</span></span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#DC2626;font-weight:600">Aug 8</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">35</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Machine Relocation</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 10</span><span style="padding:0 8px;color:#52525B">Sep 18</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Line 3 disassembly</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#16A34A;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">DP</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 10</span><span style="padding:0 8px;color:#52525B">Aug 28</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="#7C3AED" stroke="none"><path d="M12 2l4 10-4 10-4-10z" transform="rotate(90 12 12)"></path></svg>Production restart</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Milestone</span></span><span style="padding:0 8px;color:#52525B">Sep 14</span><span style="padding:0 8px;color:#52525B">Sep 14</span><span style="padding:0 8px;color:#52525B">—</span>
+          </div>
+          <div style="display:flex;align-items:center;height:32px;padding:0 10px;color:#A1A1AA;font-size:11.5px;gap:6px">＋ Add task…</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative;overflow:hidden">
+          <!-- Header row 1: months over day grid (Jul 6 – Aug 3, 29 days × 26px) -->
+          <div style="display:flex;border-bottom:1px solid #ECECF1;background:#FAFAFB;font-size:10px;font-weight:600;color:#52525B;height:19px;align-items:center">
+            <span style="width:676px;flex:none;padding:0 8px;border-right:1px solid #ECECF1">July 2026</span><span style="flex:1;padding:0 8px;white-space:nowrap;overflow:hidden">Aug 2026</span>
+          </div>
+          <!-- Header row 2: day initial + date -->
+          <div style="display:flex;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:25px">
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">6</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">7</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">8</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">9</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:700;color:#6366F1;line-height:1">F</span><span style="font-size:9.5px;font-weight:700;color:#fff;line-height:1.2;background:#6366F1;border-radius:99px;padding:0 5px">10</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">11</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">12</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">13</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">14</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">15</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">16</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">F</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">17</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">18</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">19</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">20</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">21</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">22</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">23</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">F</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">24</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">25</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">26</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">27</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">28</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">29</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">30</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #ECECF1"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">F</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">31</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">1</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">2</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">3</span></span>
+          </div>
+          <!-- Canvas: weekly pattern 182px starting Monday; weekend band 130–182px; day gridlines every 26px -->
+          <div style="position:relative;height:256px;background:repeating-linear-gradient(90deg,transparent 0 130px,rgba(24,24,27,.05) 130px 182px),repeating-linear-gradient(90deg,transparent 0 25px,#F4F4F6 25px 26px)">
+            <div style="position:absolute;top:0;bottom:0;left:117px;width:2px;background:#EF4444;z-index:3"><span style="position:absolute;top:2px;left:-16px;font-size:8px;font-weight:700;color:#fff;background:#EF4444;border-radius:3px;padding:1px 4px">TODAY</span></div>
+            <!-- Dependency: Utility rerouting end → Line 3 (starts Aug 10, off-view right) -->
+            <svg width="100%" height="256" style="position:absolute;inset:0;z-index:2;pointer-events:none">
+              <path d="M 702 80 L 716 80 L 716 176 L 742 176" fill="none" stroke="#A1A1AA" stroke-width="1.5"></path><path d="M 744 176 l -6 -4 v 8 z" fill="#A1A1AA"></path>
+              <circle cx="702" cy="80" r="3" fill="#fff" stroke="#A1A1AA" stroke-width="1.5"></circle>
+            </svg>
+            <!-- Site Prep summary Jul 1–Aug 14: clipped both sides -->
+            <div style="position:absolute;top:10px;left:-6px;right:-6px;height:12px;background:#3F3F46;z-index:1"></div>
+            <!-- Land clearing Jul 1–15: starts before view -->
+            <div style="position:absolute;top:37px;left:-6px;width:266px;height:22px;background:#22C55E;border-radius:0 6px 6px 0;display:flex;align-items:center;gap:5px;padding:0 7px;z-index:1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg><span style="font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Land clearing &amp; grading</span></div>
+            <!-- Utility Jul 8 – Aug 1 · selected, drag handles + tooltip -->
+            <div style="position:absolute;top:69px;left:52px;width:650px;height:22px;border-radius:6px;background:#BFDBFE;z-index:1;box-shadow:0 0 0 2px #6366F1,0 4px 10px rgba(99,102,241,.3)"><div style="position:absolute;inset:0;width:60%;background:#3B82F6;border-radius:6px 0 0 6px"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25)">Utility rerouting (PLN) · 60%</span><span style="position:absolute;left:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span><span style="position:absolute;right:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span></div>
+            <div style="position:absolute;top:44px;left:300px;background:#18181B;color:#fff;font-size:9.5px;border-radius:6px;padding:4px 8px;z-index:4;box-shadow:0 4px 12px rgba(0,0,0,.25);white-space:nowrap">Jul 8 → Aug 1 <span style="color:#A5B4FC">＋2d</span></div>
+            <!-- Permit Jul 15 – Aug 8: ends beyond view -->
+            <div style="position:absolute;top:101px;left:234px;right:-6px;height:22px;border-radius:6px 0 0 6px;background:#FDE68A;z-index:1"><div style="position:absolute;inset:0;width:35%;background:#F59E0B;border-radius:6px 0 0 0"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#78350F">Permit finalization (IMB) ⚠ due Aug 8 →</span></div>
+            <!-- Machine Relocation / Line 3 / milestone start beyond view -->
+            <div style="position:absolute;top:135px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#71717A;background:#F4F4F6;border:1px solid #E4E4E9;border-radius:99px;padding:3px 9px">Aug 10 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+            <div style="position:absolute;top:167px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#71717A;background:#F4F4F6;border:1px solid #E4E4E9;border-radius:99px;padding:3px 9px">Aug 10 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+            <div style="position:absolute;top:199px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#7C3AED;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:99px;padding:3px 9px">◆ Sep 14 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<p class="dv-next">Try next: "oke, build full app pakai <a class="dv-oid" href="#3a">3a</a> + tema <a class="dv-oid" href="#1a">1a</a>" · "tema <a class="dv-oid" href="#1b">1b</a> saja" · "tampilkan versi dark-nya"</p>
+</section>
+
+<section class="dv-turn" id="t2">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Day-scale Gantt header — Month → Date + day initial (M T W T F S S), weekends shaded — on the <a class="dv-oid" href="#1d">1d</a> chrome</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+  <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Day zoom — dates with English day initials, Sat/Sun columns shaded gray</div>
+  <div class="dv-card" style="width:1060px">
+    <div style="background:#FFFFFF">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #ECECF1">
+        <div style="display:flex;background:#F4F4F6;border-radius:8px;padding:2px;gap:1px">
+          <span style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;background:#fff;color:#18181B;box-shadow:0 1px 2px rgba(0,0,0,.08)">Gantt</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">List</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Board</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Calendar</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <div style="display:flex;background:#F4F4F6;border-radius:7px;padding:2px;font-size:10.5px;font-weight:500;color:#71717A"><span style="padding:3px 8px;background:#fff;border-radius:5px;color:#18181B;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)">Day</span><span style="padding:3px 8px">Week</span><span style="padding:3px 8px">Month</span><span style="padding:3px 8px">Qtr</span></div>
+        </div>
+      </div>
+      <div style="display:flex">
+        <div style="width:420px;flex:none;border-right:2px solid #E4E4E9">
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;font-size:10px;font-weight:600;color:#71717A;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:44px;align-items:end">
+            <span style="padding:7px 10px;border-right:1px solid #ECECF1">Task</span><span style="padding:7px 6px;border-right:1px solid #ECECF1">Who</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Status</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Due</span><span style="padding:7px 8px">%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Site Preparation</span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Aug 14</span><span style="padding:0 8px;color:#52525B">62</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Land clearing &amp; grading</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#0891B2;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">AW</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DCFCE7;color:#15803D">Done</span></span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#52525B">100</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;background:#EEF0FE">
+            <span style="padding:0 10px 0 26px;color:#18181B;font-weight:500">Utility rerouting (PLN)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#6366F1;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">BS</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Aug 1</span><span style="padding:0 8px;color:#52525B">60</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Permit finalization (IMB)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#D97706;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">SR</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#FEF3C7;color:#B45309">At risk</span></span><span style="padding:0 8px;color:#DC2626;font-weight:600">Aug 8</span><span style="padding:0 8px;color:#52525B">35</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transform:rotate(-90deg)"><path d="M6 9l6 6 6-6"></path></svg>Machine Relocation</span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Sep 18</span><span style="padding:0 8px;color:#52525B">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:180px 36px 84px 76px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="#7C3AED" stroke="none"><path d="M12 2l4 10-4 10-4-10z" transform="rotate(90 12 12)"></path></svg>Production restart</span>
+            <span></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Milestone</span></span><span style="padding:0 8px;color:#52525B">Sep 14</span><span style="padding:0 8px;color:#52525B">—</span>
+          </div>
+          <div style="display:flex;align-items:center;height:32px;padding:0 10px;color:#A1A1AA;font-size:11.5px">＋ Add task…</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative;overflow:hidden">
+          <!-- Header row 1: month -->
+          <div style="display:flex;border-bottom:1px solid #ECECF1;background:#FAFAFB;font-size:10px;font-weight:600;color:#52525B;height:19px;align-items:center">
+            <span style="padding:0 8px">July 2026</span>
+          </div>
+          <!-- Header row 2: day initial + date, 21 days Mon Jul 6 → Sun Jul 26, 26px each -->
+          <div style="display:flex;border-bottom:1px solid #E4E4E9;background:#FAFAFB;height:25px">
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">6</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">7</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">8</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">9</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;position:relative"><span style="font-size:7.5px;font-weight:700;color:#6366F1;line-height:1">F</span><span style="font-size:9.5px;font-weight:700;color:#fff;line-height:1.2;background:#6366F1;border-radius:99px;padding:0 5px">10</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">11</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #ECECF1;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">12</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">13</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">14</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">15</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">16</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">F</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">17</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">18</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #ECECF1;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">19</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">20</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">21</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">22</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">23</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">F</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">24</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">25</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #ECECF1;background:#EFEFF2"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">S</span><span style="font-size:9.5px;font-weight:600;color:#A1A1AA;line-height:1.2">26</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">M</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">27</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border-right:1px solid #F1F1F4"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">T</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">28</span></span>
+            <span style="width:26px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-size:7.5px;font-weight:600;color:#A1A1AA;line-height:1">W</span><span style="font-size:9.5px;font-weight:600;color:#3F3F46;line-height:1.2">29</span></span>
+          </div>
+          <!-- Canvas: weekly pattern 182px; weekend band at 130-182px (Sat+Sun); day gridlines every 26px -->
+          <div style="position:relative;height:224px;background:repeating-linear-gradient(90deg,transparent 0 130px,rgba(24,24,27,.05) 130px 182px),repeating-linear-gradient(90deg,transparent 0 25px,#F4F4F6 25px 26px)">
+            <div style="position:absolute;top:0;bottom:0;left:117px;width:2px;background:#EF4444;z-index:3"><span style="position:absolute;top:2px;left:-16px;font-size:8px;font-weight:700;color:#fff;background:#EF4444;border-radius:3px;padding:1px 4px">TODAY</span></div>
+            <!-- Site Prep summary: starts before view, ends after → clipped both sides -->
+            <div style="position:absolute;top:10px;left:-6px;right:-6px;height:12px;z-index:1"><div style="position:absolute;inset:0;background:#3F3F46;border-radius:0"></div></div>
+            <!-- Land clearing Jul 1–15: starts before view -->
+            <div style="position:absolute;top:37px;left:-6px;width:246px;height:22px;background:#22C55E;border-radius:0 6px 6px 0;display:flex;align-items:center;gap:5px;padding:0 7px;z-index:1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg><span style="font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Land clearing &amp; grading</span></div>
+            <!-- Utility Jul 8 → beyond -->
+            <div style="position:absolute;top:69px;left:52px;right:-6px;height:22px;border-radius:6px 0 0 6px;background:#BFDBFE;z-index:1"><div style="position:absolute;inset:0;width:60%;background:#3B82F6;border-radius:6px 0 0 0"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.2)">Utility rerouting (PLN) · 60% · due Aug 1 →</span></div>
+            <!-- Permit Jul 15 → beyond -->
+            <div style="position:absolute;top:101px;left:234px;right:-6px;height:22px;border-radius:6px 0 0 6px;background:#FDE68A;z-index:1"><div style="position:absolute;inset:0;width:35%;background:#F59E0B;border-radius:6px 0 0 0"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#78350F">Permit finalization (IMB) ⚠ due Aug 8 →</span></div>
+            <!-- Out-of-view rows -->
+            <div style="position:absolute;top:135px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#71717A;background:#F4F4F6;border:1px solid #E4E4E9;border-radius:99px;padding:3px 9px">Aug 10 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+            <div style="position:absolute;top:167px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#71717A;background:#F4F4F6;border:1px solid #E4E4E9;border-radius:99px;padding:3px 9px">Aug 10 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+            <div style="position:absolute;top:199px;right:8px;z-index:1;display:flex;align-items:center;gap:5px;font-size:10px;color:#7C3AED;background:#F5F3FF;border:1px solid #DDD6FE;border-radius:99px;padding:3px 9px">◆ Sep 14 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<p class="dv-next">Try next: "pakai <a class="dv-oid" href="#2a">2a</a> + tema <a class="dv-oid" href="#1a">1a</a>, build the full app" · "week zoom juga pakai arsir weekend" · "hari mulai dari Minggu (S M T W T F S)"</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Velox — theme/accent directions &amp; Gantt hero layouts</span></div>
+
+<div class="dv-sub">Theme &amp; accent</div>
+<div class="dv-opts">
+
+<!-- ============ 1a Velox Indigo · Light ============ -->
+<div class="dv-opt" id="1a">
+  <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Velox Indigo — light, as specced (#6366F1 family)</div>
+  <div class="dv-card" style="width:640px">
+    <div style="display:flex;height:380px;background:#FAFAFB">
+      <div style="width:168px;background:#FFFFFF;border-right:1px solid #ECECF1;padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex:none">
+        <div style="display:flex;align-items:center;gap:7px;padding:2px 6px 14px">
+          <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l7 8-7 8"></path><path d="M13 4l7 8-7 8"></path></svg></div>
+          <div style="font-size:15px;font-weight:800;font-style:italic;letter-spacing:-.03em;color:#18181B">velox</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:#EEF0FE;color:#4F46E5;font-size:12px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#52525B;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>My Tasks</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#52525B;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"></path><path d="M7 13l4-4 4 4 5-6"></path></svg>Dashboard</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#52525B;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>Projects</div>
+        <div style="margin-top:auto;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#7C3AED;font-size:12px;font-weight:600;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(99,102,241,.08))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z"></path></svg>Velox AI</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+        <div style="height:48px;border-bottom:1px solid #ECECF1;display:flex;align-items:center;gap:10px;padding:0 16px;background:#FFFFFF">
+          <div style="flex:1;max-width:220px;display:flex;align-items:center;gap:7px;background:#F4F4F6;border:1px solid #E7E7EC;border-radius:8px;padding:6px 10px;color:#9CA3AF;font-size:11.5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>Search… <span style="margin-left:auto;font-size:9.5px;background:#fff;border:1px solid #E4E4E9;border-radius:4px;padding:1px 4px;color:#A1A1AA">⌘K</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;flex:none;background:#6366F1;color:#fff;font-size:11.5px;font-weight:600;border-radius:8px;padding:6px 11px;box-shadow:0 1px 2px rgba(99,102,241,.4)">+ Quick add</div>
+            <div style="width:28px;height:28px;border-radius:8px;border:1px solid #E7E7EC;display:grid;place-items:center;color:#71717A"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#6366F1;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700">BS</div>
+          </div>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:10px">
+            <div style="flex:1;background:#fff;border:1px solid #ECECF1;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(24,24,27,.04)"><div style="font-size:10.5px;color:#71717A;font-weight:500">Active projects</div><div style="font-size:22px;font-weight:700;color:#18181B;letter-spacing:-.02em">12</div></div>
+            <div style="flex:1;background:#fff;border:1px solid #ECECF1;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(24,24,27,.04)"><div style="font-size:10.5px;color:#71717A;font-weight:500">On track</div><div style="font-size:22px;font-weight:700;color:#16A34A;letter-spacing:-.02em">78%</div></div>
+            <div style="flex:1;background:#fff;border:1px solid #ECECF1;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(24,24,27,.04)"><div style="font-size:10.5px;color:#71717A;font-weight:500">At risk</div><div style="font-size:22px;font-weight:700;color:#D97706;letter-spacing:-.02em">4</div></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#DCFCE7;color:#15803D">● Done</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">● In progress</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#FEF3C7;color:#B45309">● At risk</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#FEE2E2;color:#B91C1C">● Overdue</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#F4F4F5;color:#52525B">● Not started</span>
+          </div>
+          <div style="background:#fff;border:1px solid #ECECF1;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(24,24,27,.04)">
+            <div style="font-size:11px;font-weight:600;color:#18181B;margin-bottom:8px">Gantt bar sample</div>
+            <div style="position:relative;height:22px;border-radius:6px;background:#E0E7FF;overflow:hidden;width:60%"><div style="position:absolute;inset:0 45% 0 0;background:#6366F1"></div><div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;color:#312E81">Line 3 relocation · 55%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1b Akebono Blue · Light ============ -->
+<div class="dv-opt" id="1b">
+  <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Akebono Blue — brand-aligned (#0068B7) with red signal accents</div>
+  <div class="dv-card" style="width:640px">
+    <div style="display:flex;height:380px;background:#F7FAFC">
+      <div style="width:168px;background:#FFFFFF;border-right:1px solid #E6EDF3;padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex:none">
+        <div style="display:flex;align-items:center;gap:7px;padding:2px 6px 14px">
+          <div style="width:22px;height:22px;border-radius:6px;background:#0068B7;display:grid;place-items:center;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l7 8-7 8"></path><path d="M13 4l7 8-7 8"></path></svg></div>
+          <div style="font-size:15px;font-weight:800;font-style:italic;letter-spacing:-.03em;color:#0F2A3D">velox<span style="display:block;height:2px;background:#E60012;border-radius:2px;margin-top:1px"></span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:#E3F1FA;color:#0068B7;font-size:12px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#48606F;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>My Tasks</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#48606F;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"></path><path d="M7 13l4-4 4 4 5-6"></path></svg>Dashboard</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#48606F;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>Projects</div>
+        <div style="margin-top:auto;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#0068B7;font-size:12px;font-weight:600;background:#E3F1FA"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z"></path></svg>Velox AI</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+        <div style="height:48px;border-bottom:1px solid #E6EDF3;display:flex;align-items:center;gap:10px;padding:0 16px;background:#FFFFFF">
+          <div style="flex:1;max-width:220px;display:flex;align-items:center;gap:7px;background:#F2F6F9;border:1px solid #E2EAF0;border-radius:8px;padding:6px 10px;color:#93A6B3;font-size:11.5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>Search… <span style="margin-left:auto;font-size:9.5px;background:#fff;border:1px solid #DEE7EE;border-radius:4px;padding:1px 4px;color:#9FB1BD">⌘K</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;flex:none;background:#0068B7;color:#fff;font-size:11.5px;font-weight:600;border-radius:8px;padding:6px 11px;box-shadow:0 1px 2px rgba(0,104,183,.35)">+ Quick add</div>
+            <div style="width:28px;height:28px;border-radius:8px;border:1px solid #E2EAF0;display:grid;place-items:center;color:#5B7484;position:relative"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg><span style="position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#E60012;border:2px solid #fff"></span></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#0068B7;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700">BS</div>
+          </div>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:10px">
+            <div style="flex:1;background:#fff;border:1px solid #E6EDF3;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,42,61,.04)"><div style="font-size:10.5px;color:#5B7484;font-weight:500">Active projects</div><div style="font-size:22px;font-weight:700;color:#0F2A3D;letter-spacing:-.02em">12</div></div>
+            <div style="flex:1;background:#fff;border:1px solid #E6EDF3;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,42,61,.04)"><div style="font-size:10.5px;color:#5B7484;font-weight:500">On track</div><div style="font-size:22px;font-weight:700;color:#16A34A;letter-spacing:-.02em">78%</div></div>
+            <div style="flex:1;background:#fff;border:1px solid #E6EDF3;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,42,61,.04)"><div style="font-size:10.5px;color:#5B7484;font-weight:500">At risk</div><div style="font-size:22px;font-weight:700;color:#E60012;letter-spacing:-.02em">4</div></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#DCFCE7;color:#15803D">● Done</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#DCEDF9;color:#0068B7">● In progress</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#FEF3C7;color:#B45309">● At risk</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#FDE3E5;color:#C50010">● Overdue</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:#EEF2F5;color:#5B7484">● Not started</span>
+          </div>
+          <div style="background:#fff;border:1px solid #E6EDF3;border-radius:12px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,42,61,.04)">
+            <div style="font-size:11px;font-weight:600;color:#0F2A3D;margin-bottom:8px">Gantt bar sample</div>
+            <div style="position:relative;height:22px;border-radius:6px;background:#CBE4F5;overflow:hidden;width:60%"><div style="position:absolute;inset:0 45% 0 0;background:#0068B7"></div><div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;color:#08344F">Line 3 relocation · 55%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1c Indigo · Dark ============ -->
+<div class="dv-opt" id="1c">
+  <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Indigo on deep neutral — the dark theme (#0E1116 family)</div>
+  <div class="dv-card" style="width:640px">
+    <div style="display:flex;height:380px;background:#0E1116">
+      <div style="width:168px;background:#12161D;border-right:1px solid #1F2530;padding:14px 12px;display:flex;flex-direction:column;gap:2px;flex:none">
+        <div style="display:flex;align-items:center;gap:7px;padding:2px 6px 14px">
+          <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#6366F1,#8B5CF6);display:grid;place-items:center;flex:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l7 8-7 8"></path><path d="M13 4l7 8-7 8"></path></svg></div>
+          <div style="font-size:15px;font-weight:800;font-style:italic;letter-spacing:-.03em;color:#F4F4F5">velox</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:rgba(129,140,248,.14);color:#A5B4FC;font-size:12px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Home</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#9AA1AD;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>My Tasks</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#9AA1AD;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"></path><path d="M7 13l4-4 4 4 5-6"></path></svg>Dashboard</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#9AA1AD;font-size:12px;font-weight:500"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 10h18"></path></svg>Projects</div>
+        <div style="margin-top:auto;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;color:#C4B5FD;font-size:12px;font-weight:600;background:linear-gradient(135deg,rgba(139,92,246,.16),rgba(99,102,241,.16))"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z"></path></svg>Velox AI</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+        <div style="height:48px;border-bottom:1px solid #1F2530;display:flex;align-items:center;gap:10px;padding:0 16px;background:#12161D">
+          <div style="flex:1;max-width:220px;display:flex;align-items:center;gap:7px;background:#0E1116;border:1px solid #262D3A;border-radius:8px;padding:6px 10px;color:#6B7280;font-size:11.5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4-4"></path></svg>Search… <span style="margin-left:auto;font-size:9.5px;background:#1A202B;border:1px solid #2B3342;border-radius:4px;padding:1px 4px;color:#6B7280">⌘K</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <div style="display:flex;align-items:center;gap:5px;white-space:nowrap;flex:none;background:#6366F1;color:#fff;font-size:11.5px;font-weight:600;border-radius:8px;padding:6px 11px;box-shadow:0 0 16px rgba(99,102,241,.35)">+ Quick add</div>
+            <div style="width:28px;height:28px;border-radius:8px;border:1px solid #262D3A;display:grid;place-items:center;color:#9AA1AD"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg></div>
+            <div style="width:28px;height:28px;border-radius:50%;background:#6366F1;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:700">BS</div>
+          </div>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:10px">
+            <div style="flex:1;background:#151A22;border:1px solid #232A36;border-radius:12px;padding:12px 14px"><div style="font-size:10.5px;color:#8B93A1;font-weight:500">Active projects</div><div style="font-size:22px;font-weight:700;color:#F4F4F5;letter-spacing:-.02em">12</div></div>
+            <div style="flex:1;background:#151A22;border:1px solid #232A36;border-radius:12px;padding:12px 14px"><div style="font-size:10.5px;color:#8B93A1;font-weight:500">On track</div><div style="font-size:22px;font-weight:700;color:#4ADE80;letter-spacing:-.02em">78%</div></div>
+            <div style="flex:1;background:#151A22;border:1px solid #232A36;border-radius:12px;padding:12px 14px"><div style="font-size:10.5px;color:#8B93A1;font-weight:500">At risk</div><div style="font-size:22px;font-weight:700;color:#FBBF24;letter-spacing:-.02em">4</div></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(74,222,128,.14);color:#4ADE80">● Done</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(96,165,250,.14);color:#60A5FA">● In progress</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(251,191,36,.14);color:#FBBF24">● At risk</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(248,113,113,.14);color:#F87171">● Overdue</span>
+            <span style="font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:99px;background:rgba(148,163,184,.14);color:#94A3B8">● Not started</span>
+          </div>
+          <div style="background:#151A22;border:1px solid #232A36;border-radius:12px;padding:12px 14px">
+            <div style="font-size:11px;font-weight:600;color:#F4F4F5;margin-bottom:8px">Gantt bar sample</div>
+            <div style="position:relative;height:22px;border-radius:6px;background:rgba(99,102,241,.22);overflow:hidden;width:60%"><div style="position:absolute;inset:0 45% 0 0;background:#6366F1"></div><div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:600;color:#C7D2FE">Line 3 relocation · 55%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="dv-sub">Gantt hero layout — same data, three interaction chromes</div>
+<div class="dv-opts">
+
+<!-- ============ 1d Excel split ============ -->
+<div class="dv-opt" id="1d">
+  <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Excel-familiar split — full spreadsheet grid + timeline, visible gridlines, dense</div>
+  <div class="dv-card" style="width:1240px">
+    <div style="background:#FFFFFF">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #ECECF1">
+        <div style="display:flex;background:#F4F4F6;border-radius:8px;padding:2px;gap:1px">
+          <span style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;background:#fff;color:#18181B;box-shadow:0 1px 2px rgba(0,0,0,.08)">Gantt</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">List</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Board</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Calendar</span>
+          <span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#71717A">Workload</span>
+        </div>
+        <span style="font-size:11px;color:#52525B;border:1px dashed #D4D4D8;border-radius:99px;padding:4px 10px">Filter</span>
+        <span style="font-size:11px;color:#52525B;border:1px solid #E4E4E9;border-radius:99px;padding:4px 10px">Group: Phase</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <div style="display:flex;background:#F4F4F6;border-radius:7px;padding:2px;font-size:10.5px;font-weight:500;color:#71717A"><span style="padding:3px 8px">Day</span><span style="padding:3px 8px;background:#fff;border-radius:5px;color:#18181B;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)">Week</span><span style="padding:3px 8px">Month</span><span style="padding:3px 8px">Qtr</span></div>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#7C3AED;border:1px solid #DDD6FE;background:#F5F3FF;border-radius:8px;padding:5px 10px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z"></path></svg>Auto-schedule</span>
+        </div>
+      </div>
+      <div style="display:flex">
+        <div style="width:480px;flex:none;border-right:2px solid #E4E4E9">
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;font-size:10px;font-weight:600;color:#71717A;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E4E4E9;background:#FAFAFB">
+            <span style="padding:7px 10px;border-right:1px solid #ECECF1">Task</span><span style="padding:7px 6px;border-right:1px solid #ECECF1">Who</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Status</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Start</span><span style="padding:7px 8px;border-right:1px solid #ECECF1">Due</span><span style="padding:7px 8px">%</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Site Preparation</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 1</span><span style="padding:0 8px;color:#52525B">Aug 14</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">62</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Land clearing &amp; grading</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#0891B2;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">AW</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DCFCE7;color:#15803D">Done</span></span><span style="padding:0 8px;color:#52525B">Jul 1</span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">100</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px;background:#EEF0FE;outline:1.5px solid #6366F1;outline-offset:-1.5px">
+            <span style="padding:0 10px 0 26px;color:#18181B;font-weight:500">Utility rerouting (PLN)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#6366F1;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">BS</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#DBEAFE;color:#1D4ED8">In prog.</span></span><span style="padding:0 8px;color:#52525B">Jul 8</span><span style="padding:0 8px;color:#52525B">Aug 1</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">60</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Permit finalization (IMB)</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#D97706;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">SR</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#FEF3C7;color:#B45309">At risk</span></span><span style="padding:0 8px;color:#52525B">Jul 15</span><span style="padding:0 8px;color:#DC2626;font-weight:600">Aug 8</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">35</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;background:#F8F8FA;height:32px">
+            <span style="padding:0 10px;font-weight:700;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>Machine Relocation</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 10</span><span style="padding:0 8px;color:#52525B">Sep 18</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B">Line 3 disassembly</span>
+            <span style="padding:0 6px"><span style="width:20px;height:20px;border-radius:50%;background:#16A34A;color:#fff;display:inline-grid;place-items:center;font-size:8px;font-weight:700">DP</span></span>
+            <span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Not started</span></span><span style="padding:0 8px;color:#52525B">Aug 10</span><span style="padding:0 8px;color:#52525B">Aug 28</span><span style="padding:0 8px;color:#52525B;font-variant-numeric:tabular-nums">0</span>
+          </div>
+          <div style="display:grid;grid-template-columns:200px 36px 84px 60px 60px 40px;align-items:center;font-size:11.5px;border-bottom:1px solid #F1F1F4;height:32px">
+            <span style="padding:0 10px 0 26px;color:#18181B;display:flex;align-items:center;gap:5px"><svg width="10" height="10" viewBox="0 0 24 24" fill="#7C3AED" stroke="none"><path d="M12 2l4 10-4 10-4-10z" transform="rotate(90 12 12)"></path></svg>Production restart</span>
+            <span style="padding:0 6px"></span><span style="padding:0 8px"><span style="font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:99px;background:#F4F4F5;color:#52525B">Milestone</span></span><span style="padding:0 8px;color:#52525B">Sep 14</span><span style="padding:0 8px;color:#52525B">Sep 14</span><span style="padding:0 8px;color:#52525B">—</span>
+          </div>
+          <div style="display:flex;align-items:center;height:32px;padding:0 10px;color:#A1A1AA;font-size:11.5px;gap:6px">＋ Add task…</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative;overflow:hidden">
+          <div style="display:flex;border-bottom:1px solid #E4E4E9;background:#FAFAFB;font-size:10px;font-weight:600;color:#52525B">
+            <span style="width:288px;flex:none;padding:4px 8px;border-right:1px solid #ECECF1">July 2026</span><span style="width:288px;flex:none;padding:4px 8px;border-right:1px solid #ECECF1">August 2026</span><span style="flex:1;padding:4px 8px">September 2026</span>
+          </div>
+          <div style="display:flex;border-bottom:1px solid #E4E4E9;background:#FAFAFB;font-size:9px;color:#A1A1AA">
+            <span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W1</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W2</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W3</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #ECECF1">W4</span>
+            <span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W1</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W2</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W3</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #ECECF1">W4</span>
+            <span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W1</span><span style="width:72px;flex:none;padding:3px 8px;border-right:1px solid #F1F1F4">W2</span><span style="flex:1;padding:3px 8px">W3</span>
+          </div>
+          <div style="position:relative;height:256px;background:repeating-linear-gradient(90deg,transparent 0 51px,rgba(24,24,27,.032) 51px 71px,transparent 71px 72px),repeating-linear-gradient(90deg,transparent 0 71px,#F1F1F4 71px 72px)">
+            <div style="position:absolute;top:0;bottom:0;left:99px;width:2px;background:#EF4444;z-index:3"><span style="position:absolute;top:2px;left:-15px;font-size:8px;font-weight:700;color:#fff;background:#EF4444;border-radius:3px;padding:1px 4px">TODAY</span></div>
+            <svg width="100%" height="256" style="position:absolute;inset:0;z-index:2;pointer-events:none">
+              <path d="M 245 112 L 258 112 L 258 176 L 396 176" fill="none" stroke="#A1A1AA" stroke-width="1.5"></path><path d="M 396 176 l -5 -4 v 8 z" fill="#A1A1AA"></path>
+              <path d="M 590 176 L 604 176 L 604 208 L 618 208" fill="none" stroke="#A1A1AA" stroke-width="1.5"></path><path d="M 618 208 l -5 -4 v 8 z" fill="#A1A1AA"></path>
+            </svg>
+            <div style="position:absolute;top:10px;left:2px;width:448px;height:12px;z-index:1"><div style="position:absolute;inset:0;background:#3F3F46;border-radius:3px"></div><div style="position:absolute;left:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div><div style="position:absolute;right:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div></div>
+            <div style="position:absolute;top:37px;left:2px;width:142px;height:22px;background:#22C55E;border-radius:6px;display:flex;align-items:center;gap:5px;padding:0 7px;z-index:1"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg><span style="font-size:10px;font-weight:600;color:#fff;white-space:nowrap">Land clearing</span></div>
+            <div style="position:absolute;top:69px;left:73px;width:172px;height:22px;border-radius:6px;background:#BFDBFE;z-index:1;box-shadow:0 0 0 2px #6366F1,0 4px 10px rgba(99,102,241,.3)"><div style="position:absolute;inset:0;width:60%;background:#3B82F6;border-radius:6px 0 0 6px"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#1E3A8A">Utility rerouting (PLN)</span><span style="position:absolute;left:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span><span style="position:absolute;right:-4px;top:5px;width:8px;height:12px;border-radius:3px;background:#fff;border:1.5px solid #6366F1"></span></div>
+            <div style="position:absolute;top:64px;left:255px;background:#18181B;color:#fff;font-size:9.5px;border-radius:6px;padding:4px 8px;z-index:4;box-shadow:0 4px 12px rgba(0,0,0,.25);white-space:nowrap">Jul 8 → Aug 1 <span style="color:#A5B4FC">＋2d</span></div>
+            <div style="position:absolute;top:101px;left:145px;width:172px;height:22px;border-radius:6px;background:#FDE68A;z-index:1"><div style="position:absolute;inset:0;width:35%;background:#F59E0B;border-radius:6px 0 0 6px"></div><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#78350F">Permit finalization (IMB)</span></div>
+            <div style="position:absolute;top:138px;left:380px;width:280px;height:12px;z-index:1"><div style="position:absolute;inset:0;background:#3F3F46;border-radius:3px"></div><div style="position:absolute;left:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div><div style="position:absolute;right:0;bottom:-4px;width:3px;height:8px;background:#3F3F46"></div></div>
+            <div style="position:absolute;top:165px;left:396px;width:186px;height:22px;border-radius:6px;background:#E4E4E7;border:1px dashed #A1A1AA;z-index:1"><span style="position:absolute;inset:0;display:flex;align-items:center;padding:0 7px;font-size:10px;font-weight:600;color:#52525B">Line 3 disassembly</span></div>
+            <div style="position:absolute;top:197px;left:618px;z-index:1"><div style="width:16px;height:16px;background:#7C3AED;transform:rotate(45deg);border-radius:3px"></div><span style="position:absolute;left:24px;top:1px;font-size:10px;font-weight:600;color:#52525B;white-space:nowrap">Production restart · Sep 14</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1e Linear minimal ============ -->
+<div class="dv-opt" id="1e">
+  <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Linear-minimal — slim left rail, airy rows, no gridlines, floating toolbar</div>
+  <div class="dv-card" style="width:1240px">
+    <div style="background:#FCFCFD;position:relative;padding-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 18px 10px">
+        <span style="font-size:13px;font-weight:700;color:#18181B;letter-spacing:-.01em">Karawang Relocation Project</span>
+        <div style="display:flex;gap:14px;font-size:11.5px;color:#A1A1AA;font-weight:500">
+          <span style="color:#4F46E5;font-weight:600;border-bottom:2px solid #6366F1;padding-bottom:8px;margin-bottom:-10px">Gantt</span><span>List</span><span>Board</span><span>Calendar</span><span>Workload</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:10.5px;color:#71717A">
+          <span style="border:1px solid #E4E4E9;border-radius:6px;padding:3px 8px;background:#fff">⌥ Baseline</span>
+          <span style="border:1px solid #FCA5A5;color:#DC2626;border-radius:6px;padding:3px 8px;background:#FEF2F2;font-weight:600">Critical path</span>
+          <span style="border:1px solid #E4E4E9;border-radius:6px;padding:3px 8px;background:#fff">Week ▾</span>
+        </div>
+      </div>
+      <div style="display:flex;border-top:1px solid #F1F1F4">
+        <div style="width:300px;flex:none;padding:6px 0">
+          <div style="height:40px;display:flex;align-items:center;padding:0 18px;font-size:10px;font-weight:600;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em">Task</div>
+          <div style="height:34px;display:flex;align-items:center;gap:7px;padding:0 18px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#71717A" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg><span style="font-size:12px;font-weight:700;color:#18181B">Site Preparation</span><span style="font-size:10px;color:#A1A1AA">3</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 18px 0 36px"><span style="width:8px;height:8px;border-radius:50%;background:#22C55E;flex:none"></span><span style="font-size:12px;color:#3F3F46">Land clearing &amp; grading</span><span style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:#0891B2;color:#fff;display:grid;place-items:center;font-size:7.5px;font-weight:700">AW</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 18px 0 36px;background:#F6F6FF;border-radius:8px;margin:0 6px;padding-left:30px"><span style="width:8px;height:8px;border-radius:50%;background:#3B82F6;flex:none"></span><span style="font-size:12px;color:#18181B;font-weight:500">Utility rerouting (PLN)</span><span style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:#6366F1;color:#fff;display:grid;place-items:center;font-size:7.5px;font-weight:700">BS</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 18px 0 36px"><span style="width:8px;height:8px;border-radius:50%;background:#F59E0B;flex:none"></span><span style="font-size:12px;color:#3F3F46">Permit finalization (IMB)</span><span style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:#D97706;color:#fff;display:grid;place-items:center;font-size:7.5px;font-weight:700">SR</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:7px;padding:0 18px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#71717A" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg><span style="font-size:12px;font-weight:700;color:#18181B">Machine Relocation</span><span style="font-size:10px;color:#A1A1AA">2</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 18px 0 36px"><span style="width:8px;height:8px;border-radius:50%;background:#D4D4D8;flex:none"></span><span style="font-size:12px;color:#3F3F46">Line 3 disassembly</span><span style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:#16A34A;color:#fff;display:grid;place-items:center;font-size:7.5px;font-weight:700">DP</span></div>
+          <div style="height:34px;display:flex;align-items:center;gap:8px;padding:0 18px 0 36px"><svg width="10" height="10" viewBox="0 0 24 24" fill="#7C3AED"><path d="M12 2l4 10-4 10-4-10z" transform="rotate(90 12 12)"></path></svg><span style="font-size:12px;color:#3F3F46">Production restart</span></div>
+          <div style="height:34px;display:flex;align-items:center;padding:0 18px 0 36px;font-size:12px;color:#C4C4CC">＋ Add task</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative;padding:6px 0">
+          <div style="height:40px;display:flex;align-items:center">
+            <span style="width:288px;flex:none;font-size:10.5px;font-weight:600;color:#71717A;padding:0 10px">JULY 2026<span style="font-weight:400;color:#C4C4CC;margin-left:10px;letter-spacing:.2em">W1 · W2 · W3 · W4</span></span>
+            <span style="width:288px;flex:none;font-size:10.5px;font-weight:600;color:#71717A;padding:0 10px">AUGUST<span style="font-weight:400;color:#C4C4CC;margin-left:10px;letter-spacing:.2em">W1 · W2 · W3 · W4</span></span>
+            <span style="flex:1;font-size:10.5px;font-weight:600;color:#71717A;padding:0 10px">SEPTEMBER</span>
+          </div>
+          <div style="position:relative;height:272px">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 287px,#F1F1F4 287px 288px)"></div>
+            <div style="position:absolute;top:-6px;bottom:0;left:99px;width:1.5px;background:#6366F1;z-index:3"><span style="position:absolute;top:-2px;left:-4.5px;width:9px;height:9px;border-radius:50%;background:#6366F1"></span></div>
+            <svg width="100%" height="272" style="position:absolute;inset:0;z-index:2;pointer-events:none">
+              <path d="M 245 116 C 290 116 290 186 340 186 L 394 186" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="none"></path><path d="M 396 186 l -6 -4 v 8 z" fill="#DC2626"></path>
+            </svg>
+            <div style="position:absolute;top:8px;left:2px;width:448px;height:6px;background:#E4E4E9;border-radius:99px;z-index:1"><div style="width:62%;height:100%;background:#6366F1;border-radius:99px"></div></div>
+            <div style="position:absolute;top:41px;left:2px;width:142px;height:20px;background:#22C55E;border-radius:99px;z-index:1"></div><span style="position:absolute;top:44px;left:152px;font-size:10.5px;color:#71717A;z-index:1">Land clearing · Done</span>
+            <div style="position:absolute;top:75px;left:73px;width:172px;height:20px;border-radius:99px;background:#DBEAFE;z-index:1;outline:2px solid #DC2626;outline-offset:1px"><div style="position:absolute;inset:0;width:60%;background:#3B82F6;border-radius:99px"></div></div><span style="position:absolute;top:78px;left:253px;font-size:10.5px;color:#71717A;z-index:1">Utility rerouting · 60%</span>
+            <div style="position:absolute;top:109px;left:145px;width:172px;height:20px;border-radius:99px;background:#FEF3C7;z-index:1"><div style="position:absolute;inset:0;width:35%;background:#F59E0B;border-radius:99px"></div></div><span style="position:absolute;top:112px;left:325px;font-size:10.5px;color:#B45309;font-weight:600;z-index:1">⚠ slipping</span>
+            <div style="position:absolute;top:145px;left:380px;width:280px;height:6px;background:#E4E4E9;border-radius:99px;z-index:1"></div>
+            <div style="position:absolute;top:176px;left:396px;width:186px;height:20px;border-radius:99px;background:#F4F4F5;border:1px dashed #C4C4CC;z-index:1;outline:2px solid #DC2626;outline-offset:1px"></div><span style="position:absolute;top:179px;left:590px;font-size:10.5px;color:#71717A;z-index:1">Line 3 disassembly</span>
+            <div style="position:absolute;top:208px;left:618px;z-index:1"><div style="width:14px;height:14px;background:#7C3AED;transform:rotate(45deg);border-radius:3px"></div></div><span style="position:absolute;top:210px;left:642px;font-size:10.5px;color:#71717A;z-index:1">◆ Production restart</span>
+            <div style="position:absolute;top:70px;left:74px;width:170px;height:30px;border-radius:99px;z-index:2"></div>
+          </div>
+          <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:2px;background:rgba(24,24,27,.92);backdrop-filter:blur(8px);border-radius:12px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:5">
+            <span style="font-size:10.5px;color:#E4E4E7;padding:5px 10px;border-radius:8px;background:rgba(255,255,255,.12);font-weight:600">Week</span>
+            <span style="font-size:10.5px;color:#A1A1AA;padding:5px 10px">Month</span>
+            <span style="width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 3px"></span>
+            <span style="font-size:10.5px;color:#A1A1AA;padding:5px 10px">Baseline</span>
+            <span style="font-size:10.5px;color:#FCA5A5;padding:5px 10px;font-weight:600">Critical path</span>
+            <span style="width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 3px"></span>
+            <span style="font-size:10.5px;color:#C4B5FD;padding:5px 10px;font-weight:600">✦ Auto-schedule</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1f Timeline-first ============ -->
+<div class="dv-opt" id="1f">
+  <div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Timeline-first — grid collapsed to a name column, labels on bars, phase bands</div>
+  <div class="dv-card" style="width:1240px">
+    <div style="background:#FFFFFF">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #ECECF1;background:linear-gradient(180deg,#FAFAFF,#fff)">
+        <div style="display:flex;background:#EEF0FE;border-radius:8px;padding:2px"><span style="font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;background:#6366F1;color:#fff">Gantt</span><span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#4F46E5">List</span><span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#4F46E5">Board</span><span style="font-size:11.5px;font-weight:500;padding:5px 12px;color:#4F46E5">Calendar</span></div>
+        <span style="font-size:11px;color:#52525B;border:1px solid #E4E4E9;border-radius:99px;padding:4px 10px">Status: All ▾</span>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center"><span style="font-size:11px;font-weight:600;color:#fff;background:#6366F1;border-radius:8px;padding:5px 12px">Share</span></div>
+      </div>
+      <div style="display:flex">
+        <div style="width:250px;flex:none;border-right:1px solid #ECECF1;background:#FAFAFB">
+          <div style="height:36px;border-bottom:1px solid #ECECF1;display:flex;align-items:center;padding:0 14px;font-size:10px;font-weight:600;color:#A1A1AA;text-transform:uppercase;letter-spacing:.06em">Karawang Relocation</div>
+          <div style="height:30px;display:flex;align-items:center;padding:0 14px;background:#EEF0FE;border-left:3px solid #6366F1;font-size:11px;font-weight:700;color:#4338CA">PHASE 1 — SITE PREP</div>
+          <div style="height:36px;display:flex;align-items:center;padding:0 14px 0 22px;font-size:12px;color:#3F3F46;border-bottom:1px solid #F4F4F6">Land clearing &amp; grading</div>
+          <div style="height:36px;display:flex;align-items:center;padding:0 14px 0 22px;font-size:12px;color:#3F3F46;border-bottom:1px solid #F4F4F6">Utility rerouting (PLN)</div>
+          <div style="height:36px;display:flex;align-items:center;padding:0 14px 0 22px;font-size:12px;color:#3F3F46;border-bottom:1px solid #F4F4F6">Permit finalization (IMB)</div>
+          <div style="height:30px;display:flex;align-items:center;padding:0 14px;background:#F5F3FF;border-left:3px solid #8B5CF6;font-size:11px;font-weight:700;color:#6D28D9">PHASE 2 — RELOCATION</div>
+          <div style="height:36px;display:flex;align-items:center;padding:0 14px 0 22px;font-size:12px;color:#3F3F46;border-bottom:1px solid #F4F4F6">Line 3 disassembly</div>
+          <div style="height:36px;display:flex;align-items:center;padding:0 14px 0 22px;font-size:12px;color:#3F3F46">◆ Production restart</div>
+        </div>
+        <div style="flex:1;min-width:0;position:relative">
+          <div style="height:36px;border-bottom:1px solid #ECECF1;display:flex;font-size:10px;font-weight:600;color:#52525B;align-items:stretch">
+            <span style="width:288px;flex:none;border-right:1px solid #ECECF1;display:flex;flex-direction:column;justify-content:center;padding:0 8px">July 2026<span style="font-weight:400;color:#C4C4CC;font-size:8.5px;letter-spacing:.35em">W1&nbsp;&nbsp;&nbsp;&nbsp;W2&nbsp;&nbsp;&nbsp;&nbsp;W3&nbsp;&nbsp;&nbsp;&nbsp;W4</span></span>
+            <span style="width:288px;flex:none;border-right:1px solid #ECECF1;display:flex;flex-direction:column;justify-content:center;padding:0 8px">August 2026<span style="font-weight:400;color:#C4C4CC;font-size:8.5px;letter-spacing:.35em">W1&nbsp;&nbsp;&nbsp;&nbsp;W2&nbsp;&nbsp;&nbsp;&nbsp;W3&nbsp;&nbsp;&nbsp;&nbsp;W4</span></span>
+            <span style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 8px">September 2026<span style="font-weight:400;color:#C4C4CC;font-size:8.5px;letter-spacing:.35em">W1&nbsp;&nbsp;&nbsp;&nbsp;W2&nbsp;&nbsp;&nbsp;&nbsp;W3</span></span>
+          </div>
+          <div style="position:relative;height:240px;background:repeating-linear-gradient(90deg,transparent 0 51px,rgba(24,24,27,.028) 51px 71px,transparent 71px 72px)">
+            <div style="position:absolute;top:0;height:30px;left:0;right:0;background:#EEF0FE;opacity:.5"></div>
+            <div style="position:absolute;top:138px;height:30px;left:0;right:0;background:#F5F3FF;opacity:.6"></div>
+            <div style="position:absolute;top:0;bottom:0;left:99px;width:2px;background:#F43F5E;z-index:3"><span style="position:absolute;top:3px;left:6px;font-size:8.5px;font-weight:700;color:#F43F5E">JUL 10</span></div>
+            <div style="position:absolute;top:4px;left:2px;width:448px;height:20px;border-radius:6px;background:linear-gradient(90deg,#6366F1,#8B5CF6);opacity:.9;z-index:1;display:flex;align-items:center;padding:0 8px"><span style="font-size:10px;font-weight:700;color:#fff">SITE PREP — 62%</span></div>
+            <div style="position:absolute;top:36px;left:2px;width:142px;height:24px;background:#22C55E;border-radius:7px;z-index:1;display:flex;align-items:center;gap:5px;padding:0 7px"><span style="width:14px;height:14px;border-radius:50%;background:#fff;color:#16A34A;display:grid;place-items:center;font-size:6.5px;font-weight:800">AW</span><span style="font-size:10px;font-weight:600;color:#fff">Land clearing ✓</span></div>
+            <div style="position:absolute;top:72px;left:73px;width:172px;height:24px;border-radius:7px;background:#93C5FD;z-index:1;overflow:hidden"><div style="position:absolute;inset:0;width:60%;background:#3B82F6"></div><span style="position:absolute;inset:0;display:flex;align-items:center;gap:5px;padding:0 7px"><span style="width:14px;height:14px;border-radius:50%;background:#fff;color:#2563EB;display:inline-grid;place-items:center;font-size:6.5px;font-weight:800">BS</span><span style="font-size:10px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.2)">Utility rerouting 60%</span></span></div>
+            <div style="position:absolute;top:108px;left:145px;width:172px;height:24px;border-radius:7px;background:#FCD34D;z-index:1;overflow:hidden"><div style="position:absolute;inset:0;width:35%;background:#F59E0B"></div><span style="position:absolute;inset:0;display:flex;align-items:center;gap:5px;padding:0 7px"><span style="width:14px;height:14px;border-radius:50%;background:#fff;color:#B45309;display:inline-grid;place-items:center;font-size:6.5px;font-weight:800">SR</span><span style="font-size:10px;font-weight:600;color:#78350F">Permit (IMB) ⚠</span></span></div>
+            <div style="position:absolute;top:142px;left:380px;width:280px;height:20px;border-radius:6px;background:linear-gradient(90deg,#8B5CF6,#A78BFA);opacity:.9;z-index:1;display:flex;align-items:center;padding:0 8px"><span style="font-size:10px;font-weight:700;color:#fff">RELOCATION — 0%</span></div>
+            <div style="position:absolute;top:174px;left:396px;width:186px;height:24px;border-radius:7px;background:#F4F4F5;border:1.5px dashed #A1A1AA;z-index:1;display:flex;align-items:center;padding:0 8px"><span style="font-size:10px;font-weight:600;color:#52525B">Line 3 disassembly</span></div>
+            <div style="position:absolute;top:212px;left:618px;z-index:1;display:flex;align-items:center;gap:8px"><div style="width:15px;height:15px;background:#7C3AED;transform:rotate(45deg);border-radius:3px;box-shadow:0 2px 6px rgba(124,58,237,.4)"></div><span style="font-size:10.5px;font-weight:600;color:#3F3F46">Production restart</span></div>
+            <svg width="100%" height="240" style="position:absolute;inset:0;z-index:2;pointer-events:none">
+              <path d="M 245 84 L 260 84 L 260 186 L 394 186" fill="none" stroke="#A1A1AA" stroke-width="1.5"></path><path d="M 396 186 l -6 -4 v 8 z" fill="#A1A1AA"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<p class="dv-next">Try next: "go with <a class="dv-oid" href="#1a">1a</a> + <a class="dv-oid" href="#1d">1d</a>, build the app" · "mix: <a class="dv-oid" href="#1b">1b</a> accent on the <a class="dv-oid" href="#1e">1e</a> layout" · "show me a dark version of <a class="dv-oid" href="#1f">1f</a>"</p>
+</section>
+
+</x-dc>
+</body>
+</html>
