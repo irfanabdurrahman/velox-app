@@ -1,0 +1,64 @@
+/* Velox theme system — ported verbatim from the Claude Design prototype.
+   data-vtheme (light|dark) and data-vaccent (indigo default + 7 accents) drive
+   every colour via CSS custom properties. */
+
+html, body, #root { margin: 0; height: 100%; background: #F7F7F9; }
+* { box-sizing: border-box; }
+body { font-family: Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: #4F46E5; text-decoration: none; }
+a:hover { color: #4338CA; }
+input, textarea, button, select { font-family: inherit; }
+input::placeholder, textarea::placeholder { color: var(--txt3); }
+input:focus, textarea:focus { outline: none; }
+button { border: none; background: none; cursor: pointer; padding: 0; color: inherit; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: rgba(125,130,145,.35); border-radius: 8px; border: 2.5px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+[data-vtheme] {
+  --bg:#ECEDF3;--panel:#FFFFFF;--card:#FFFFFF;--line:#DCDEE8;--line2:#EAEBF1;--hover:#F1F2F6;
+  --txt:#18181B;--txt2:#52525B;--txt3:#A1A1AA;
+  --acc:#6366F1;--acc2:#8B5CF6;--accT:#4F46E5;--accS:#EEF0FE;--ring:rgba(99,102,241,.35);
+  --okT:#15803D;--okB:#DCFCE7;--inT:#1D4ED8;--inB:#DBEAFE;--waT:#B45309;--waB:#FEF3C7;--bdT:#B91C1C;--bdB:#FEE2E2;--muT:#52525B;--muB:#F4F4F5;
+  --ok:#16A34A;--in:#3B82F6;--wa:#F59E0B;--bd:#DC2626;
+  --wknd:rgba(24,24,27,.045);--tdy:#EF4444;--sum:#3F3F46;--msC:#7C3AED;
+  --blB:#BFDBFE;--amB:#FDE68A;--gyB:#E6E6EA;--gyT:#52525B;
+  --glass:rgba(255,255,255,.9);--inputBg:#F4F4F6;
+  --sh1:0 1px 3px rgba(24,24,27,.09),0 1px 2px rgba(24,24,27,.05);--sh2:0 5px 18px rgba(24,24,27,.12);--sh3:0 16px 44px rgba(24,24,27,.2);
+}
+[data-vtheme="dark"] {
+  --bg:#090C12;--panel:#12171F;--card:#1A212D;--line:#2B3444;--line2:#232B39;--hover:#242D3C;
+  --txt:#F4F4F5;--txt2:#A6ADBA;--txt3:#6B7280;
+  --acc:#6366F1;--acc2:#8B5CF6;--accT:#A5B4FC;--accS:rgba(129,140,248,.14);--ring:rgba(129,140,248,.4);
+  --okT:#4ADE80;--okB:rgba(74,222,128,.13);--inT:#60A5FA;--inB:rgba(96,165,250,.13);--waT:#FBBF24;--waB:rgba(251,191,36,.13);--bdT:#F87171;--bdB:rgba(248,113,113,.13);--muT:#94A3B8;--muB:rgba(148,163,184,.13);
+  --ok:#22C55E;--in:#3B82F6;--wa:#F59E0B;--bd:#EF4444;
+  --wknd:rgba(255,255,255,.04);--tdy:#F87171;--sum:#9AA1AD;--msC:#A78BFA;
+  --blB:rgba(59,130,246,.3);--amB:rgba(245,158,11,.28);--gyB:#2A3140;--gyT:#A6ADBA;
+  --glass:rgba(21,26,34,.92);--inputBg:#0E1116;
+  --sh1:0 1px 2px rgba(0,0,0,.4);--sh2:0 4px 16px rgba(0,0,0,.5);--sh3:0 16px 44px rgba(0,0,0,.6);
+}
+[data-vaccent="blue"]{--acc:#0068B7;--acc2:#0EA5E9;--accT:#00589B;--accS:#E1F0FA;--ring:rgba(14,116,196,.35);--bg:#E6EEF5;--line:#D3DEE9;--line2:#E5ECF2;--hover:#EEF4F9;--wknd:rgba(0,89,155,.05)}
+[data-vaccent="teal"]{--acc:#0D9488;--acc2:#2DD4BF;--accT:#0B7268;--accS:#D9F2EF;--ring:rgba(13,148,136,.35);--bg:#E5F0EE;--line:#D2E1DE;--line2:#E4EDEB;--hover:#EDF5F3;--wknd:rgba(11,114,104,.05)}
+[data-vaccent="violet"]{--acc:#7C3AED;--acc2:#C084FC;--accT:#6D28D9;--accS:#F1E9FE;--ring:rgba(124,58,237,.35);--bg:#EEEAF6;--line:#DED6EC;--line2:#EBE6F4;--hover:#F3EFF9;--wknd:rgba(109,40,217,.05)}
+[data-vaccent="sunset"]{--acc:#EA580C;--acc2:#F59E0B;--accT:#C2410C;--accS:#FDEBDD;--ring:rgba(234,88,12,.32);--bg:#F3EDE5;--line:#E6DBCE;--line2:#F0E9DF;--hover:#F7F1E9;--wknd:rgba(194,65,12,.05)}
+[data-vtheme="dark"][data-vaccent="blue"]{--accT:#7CC4F0;--accS:rgba(14,165,233,.16);--bg:#07101A;--panel:#0E1925;--card:#152435;--line:#26374C;--line2:#1E2D40;--hover:#1F3144}
+[data-vtheme="dark"][data-vaccent="teal"]{--accT:#5EEAD4;--accS:rgba(45,212,191,.15);--bg:#071312;--panel:#0E1B19;--card:#142523;--line:#25403C;--line2:#1D3330;--hover:#1F3833}
+[data-vtheme="dark"][data-vaccent="violet"]{--accT:#C4B5FD;--accS:rgba(192,132,252,.16);--bg:#0C0916;--panel:#141021;--card:#1C1730;--line:#342A4B;--line2:#29203C;--hover:#2C2242}
+[data-vtheme="dark"][data-vaccent="sunset"]{--accT:#FDBA74;--accS:rgba(245,158,11,.15);--bg:#130D07;--panel:#1C140D;--card:#261C13;--line:#413326;--line2:#35291E;--hover:#392C1E}
+[data-vaccent="rose"]{--acc:#E11D48;--acc2:#FB7185;--accT:#BE123C;--accS:#FCE8ED;--ring:rgba(225,29,72,.3);--bg:#F3EAED;--line:#E7D6DC;--line2:#F0E5E9;--hover:#F7EEF1;--wknd:rgba(190,18,60,.05)}
+[data-vaccent="fuchsia"]{--acc:#C026D3;--acc2:#E879F9;--accT:#A21CAF;--accS:#F8E9FA;--ring:rgba(192,38,211,.3);--bg:#F1EAF3;--line:#E4D6E8;--line2:#EEE4F1;--hover:#F5EDF7;--wknd:rgba(162,28,175,.05)}
+[data-vaccent="slate"]{--acc:#475569;--acc2:#94A3B8;--accT:#334155;--accS:#E8ECF1;--ring:rgba(71,85,105,.3);--bg:#EAECEF;--line:#D8DCE3;--line2:#E7EAEE;--hover:#F0F2F5;--wknd:rgba(51,65,85,.06)}
+[data-vtheme="dark"][data-vaccent="rose"]{--accT:#FDA4AF;--accS:rgba(251,113,133,.15);--bg:#120709;--panel:#1B0F13;--card:#25161B;--line:#40272F;--line2:#331E25;--hover:#372129}
+[data-vtheme="dark"][data-vaccent="fuchsia"]{--accT:#F0ABFC;--accS:rgba(232,121,249,.15);--bg:#100812;--panel:#180F1B;--card:#221626;--line:#3B2842;--line2:#2F1F35;--hover:#33223A}
+[data-vtheme="dark"][data-vaccent="slate"]{--accT:#CBD5E1;--accS:rgba(148,163,184,.15);--bg:#0B0E12;--panel:#12161C;--card:#1A1F27;--line:#2C3440;--line2:#232A34;--hover:#252D38}
+
+@keyframes vpop{from{opacity:0;transform:scale(.97) translateY(5px)}to{opacity:1;transform:none}}
+@keyframes vfade{from{opacity:0}to{opacity:1}}
+@keyframes vslide{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes vup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes vpulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes vspin{to{transform:rotate(360deg)}}
+
+/* hover helper: reproduces the prototype's style-hover attribute */
+.vh { transition: background .12s, color .12s, border-color .12s, transform .12s; }

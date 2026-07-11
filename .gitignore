@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.log
+server/velox.db
+server/velox.db-*
+server/dist/
+web/dist/
+.DS_Store
+*.tsbuildinfo
+
+# secrets
+.env
+.env.*
+!.env.example

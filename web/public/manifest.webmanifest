@@ -1,0 +1,12 @@
+{
+  "name": "Velox",
+  "short_name": "Velox",
+  "description": "Swift project management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ECEDF3",
+  "theme_color": "#6366F1",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

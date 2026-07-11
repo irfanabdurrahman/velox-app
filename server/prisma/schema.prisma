@@ -1,0 +1,481 @@
+// Velox production data model (PostgreSQL via Prisma).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+  MEMBER
+  GUEST
+  EXEC_VIEWER
+}
+
+// A person: doubles as an auth account (registered users) and an assignable
+// team member (seeded directory). id is a short code for seeded members (e.g. "BS")
+// or a nanoid for self-registered users.
+model User {
+  id             String   @id
+  email          String   @unique
+  name           String
+  passwordHash   String
+  initials       String
+  color          String   @default("#6366F1")
+  isRegistered   Boolean  @default(false)
+  oauthProvider  String?
+  oauthId        String?
+  twoFAEnabled   Boolean  @default(false)
+  twoFASecret    String?
+  notifPrefs     Json     @default("{}")
+  pushSub        Json?
+  createdAt      DateTime @default(now())
+
+  memberships    Membership[]
+  ownedProjects  Project[]         @relation("ProjectOwner")
+  assignedTasks  Task[]            @relation("TaskAssignee")
+  taskAssignees  TaskAssignee[]
+  watching       TaskWatcher[]
+  comments       Comment[]
+  chatMessages   ChatMessage[]
+  notifications  Notification[]
+  refreshTokens  RefreshToken[]
+  apiKeys        ApiKey[]
+  timeEntries    TimeEntry[]
+  statusUpdates  StatusUpdate[]
+  auditEvents    AuditLog[]
+
+  @@index([oauthProvider, oauthId])
+}
+
+model Workspace {
+  id    String @id
+  name  String
+  color String
+  ini   String
+  meta  String @default("")
+
+  memberships Membership[]
+  projects    Project[]
+  channels    ChatChannel[]
+  apiKeys     ApiKey[]
+  webhooks    Webhook[]
+  rules       Rule[]
+  forms       Form[]
+  auditLogs   AuditLog[]
+}
+
+model Membership {
+  id          String    @id @default(cuid())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  role        Role      @default(MEMBER)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+}
+
+model Category {
+  id       String    @id
+  label    String
+  projects Project[]
+}
+
+model Project {
+  id          String    @id
+  name        String
+  code        String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  owner       User?     @relation("ProjectOwner", fields: [ownerId], references: [id])
+  ownerId     String?
+  st          String    @default("mut")
+  prog        Int       @default(0)
+  due         Int?
+  color       String    @default("#6366F1")
+  privacy     String    @default("workspace") // workspace | private | hidden
+  archived    Boolean   @default(false)
+  isTemplate  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  tasks         Task[]
+  sections      Section[]
+  customFields  CustomField[]
+  statusUpdates StatusUpdate[]
+  forms         Form[]
+  taskLinks     TaskProject[]
+
+  @@index([workspaceId])
+}
+
+// A group of tasks within a project (List/Board section headers).
+model Section {
+  id        String @id @default(cuid())
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  name      String
+  ord       Int    @default(0)
+  tasks     Task[]
+
+  @@index([projectId])
+}
+
+// Per-project custom field definition.
+model CustomField {
+  id        String  @id @default(cuid())
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  name      String
+  kind      String  // text | number | dropdown | date | people | currency | formula
+  config    Json    @default("{}") // options for dropdown, currency code, formula expr…
+  ord       Int     @default(0)
+
+  @@index([projectId])
+}
+
+model Task {
+  id         String    @id
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String
+  section    Section?  @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  sectionId  String?
+  parent     Task?     @relation("Subtasks", fields: [parentId], references: [id], onDelete: SetNull)
+  parentId   String?
+  name       String
+  descr      String    @default("") // rich text (HTML)
+  assignee   User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assigneeId String?   // primary assignee (kept for back-compat + fast queries)
+  pr         String    @default("med")
+  pg         Int       @default(0)
+  st         String    @default("mut")
+  s          Int?
+  e          Int?
+  ms         Boolean   @default(false)
+  crit       Boolean   @default(false)
+  bs         Int?
+  be         Int?
+  lbl        Json      @default("[]")
+  deps       Json      @default("[]") // [{t, type: FS|SS|FF|SF, lag, crit}]
+  checklist  Json      @default("[]") // [{id, txt, done}]
+  cf         Json      @default("{}") // custom field values keyed by CustomField.id
+  est        String?
+  tt         String?
+  recurrence String?   // RRULE-ish string; null = one-off
+  ord        Int       @default(0)
+  deletedAt  DateTime? // soft delete → trash
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  subtasks   Task[]         @relation("Subtasks")
+  comments   Comment[]
+  files      FileAsset[]
+  assignees  TaskAssignee[]
+  watchers   TaskWatcher[]
+  timeEntries TimeEntry[]
+  homes      TaskProject[]
+
+  @@index([projectId])
+  @@index([parentId])
+  @@index([sectionId])
+  @@index([deletedAt])
+}
+
+// Multi-assignee join.
+model TaskAssignee {
+  id     String @id @default(cuid())
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([taskId, userId])
+  @@index([userId])
+}
+
+// Followers / watchers.
+model TaskWatcher {
+  id     String @id @default(cuid())
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([taskId, userId])
+  @@index([userId])
+}
+
+// Multi-homing: a task can appear in additional projects (Asana pattern).
+model TaskProject {
+  id        String  @id @default(cuid())
+  task      Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+
+  @@unique([taskId, projectId])
+  @@index([projectId])
+}
+
+model TimeEntry {
+  id        String   @id @default(cuid())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  minutes   Int
+  note      String   @default("")
+  day       Int      // day index
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  task      Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  parent    Comment?  @relation("Thread", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  String?
+  author    User?     @relation(fields: [authorId], references: [id])
+  authorId  String?
+  whenTxt   String
+  txt       String
+  rx        Json      @default("[]")
+  createdAt DateTime  @default(now())
+
+  replies   Comment[] @relation("Thread")
+
+  @@index([taskId])
+  @@index([parentId])
+}
+
+model FileAsset {
+  id        String   @id @default(cuid())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+  n         String   // display name
+  s         String   // human size label
+  k         String   // kind: pdf|xls|img|link|doc…
+  url       String?  // stored path or external link
+  bytes     Int?
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+}
+
+// Weekly project status update (On track / At risk / Off track + summary).
+model StatusUpdate {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  String?
+  status    String   // ok | risk | bad
+  summary   String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model Notification {
+  id      String  @id
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String?
+  kind    String
+  ic      String
+  unread  Boolean @default(true)
+  whenTxt String
+  txt     String
+  ref     String?
+  who     String?
+  go      String?
+  ord     Int     @default(0)
+}
+
+model ChatChannel {
+  id          String    @id
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String?
+  kind        String
+  name        String
+  ord         Int       @default(0)
+
+  messages     ChatMessage[]
+  participants ChatChannelMember[]
+}
+
+// Explicit membership for non-workspace channels (DMs). Workspace channels are
+// authorized via workspace membership instead.
+model ChatChannelMember {
+  id        String      @id @default(cuid())
+  channel   ChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String
+  userId    String
+
+  @@unique([channelId, userId])
+  @@index([userId])
+}
+
+model ChatMessage {
+  id        Int         @id @default(autoincrement())
+  channel   ChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String
+  author    User?       @relation(fields: [authorId], references: [id])
+  authorId  String?
+  whenTxt   String
+  txt       String
+  ref       String?
+  ord       Int         @default(0)
+  createdAt DateTime    @default(now())
+
+  @@index([channelId])
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  revoked   Boolean   @default(false)
+  rotatedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ---- Integrations & agentic (B6) ------------------------------------------
+model ApiKey {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  createdBy   User?     @relation(fields: [createdById], references: [id])
+  createdById String?
+  name        String
+  prefix      String    // shown to the user, e.g. vlx_live_ab12
+  keyHash     String    @unique
+  scopes      Json      @default("[]") // ["tasks:read","tasks:write",...]
+  lastUsedAt  DateTime?
+  revoked     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+}
+
+model Webhook {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  url         String
+  events      Json      @default("[]") // ["task.created","status.changed",...]
+  secret      String    // signing secret
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  deliveries  WebhookDelivery[]
+
+  @@index([workspaceId])
+}
+
+model WebhookDelivery {
+  id         String   @id @default(cuid())
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhookId  String
+  event      String
+  status     Int?     // HTTP status; null = failed to connect
+  ok         Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([webhookId])
+}
+
+model Rule {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  name        String
+  trigger     Json      // { type, config }
+  action      Json      // { type, config }
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+}
+
+model Form {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectId   String?
+  name        String
+  fields      Json      @default("[]") // [{key,label,type,required}]
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  submissions FormSubmission[]
+
+  @@index([workspaceId])
+}
+
+model FormSubmission {
+  id        String   @id @default(cuid())
+  form      Form     @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId    String
+  data      Json
+  taskId    String?  // task created from this submission
+  createdAt DateTime @default(now())
+
+  @@index([formId])
+}
+
+// ---- Governance (B4) ------------------------------------------------------
+model AuditLog {
+  id          String    @id @default(cuid())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  actor       User?     @relation(fields: [actorId], references: [id])
+  actorId     String?
+  action      String    // e.g. task.deleted, member.role_changed, apikey.created
+  target      String?
+  meta        Json      @default("{}")
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+  @@index([createdAt])
+}
+
+// ---- Goals / OKR (B4) -----------------------------------------------------
+model Goal {
+  id          String    @id @default(cuid())
+  workspaceId String
+  name        String
+  ord         Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  keyResults  KeyResult[]
+
+  @@index([workspaceId])
+}
+
+model KeyResult {
+  id        String @id @default(cuid())
+  goal      Goal   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  goalId    String
+  name      String
+  target    Int    @default(100)
+  current   Int    @default(0)
+  projectId String? // optional link to a project for auto-progress
+
+  @@index([goalId])
+}
