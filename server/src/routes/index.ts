@@ -8,6 +8,7 @@ import { registerMcp } from './mcp.ts';
 import { registerReportRoutes } from './reports.ts';
 import { registerAuthxRoutes } from './authx.ts';
 import { registerRealtimeRoutes } from './realtime.ts';
+import { registerGoalRoutes } from './goals.ts';
 
 export function mountRoutes(app: Express) {
   registerTaskRoutes(app);      // Wave 1: trash/restore, duplicate, convert, bulk, time, assignees, watchers, multi-home
@@ -19,4 +20,5 @@ export function mountRoutes(app: Express) {
   registerReportRoutes(app);    // Wave 5: burndown, velocity, cfd, timesheet
   registerAuthxRoutes(app);     // Wave 4: 2FA, SSO, data export, audit log
   registerRealtimeRoutes(app);  // Wave 3: push subscribe, notif prefs, digest test
+  registerGoalRoutes(app);      // Wave 7: DB-backed goals / OKRs
 }

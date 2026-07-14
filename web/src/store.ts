@@ -33,6 +33,7 @@ export interface VState {
   workspaces: Workspace[];
   categories: Category[];
   projects: Project[];
+  templates: Project[]; // saved project templates (isTemplate)
   tasks: Task[];
   inbox: Notif[];
   chatChannels: ChatChannel[];
@@ -47,6 +48,7 @@ export interface VState {
   // detail caches
   comments: Record<string, any[]>;
   files: Record<string, any[]>;
+  activity: Record<string, any[]>;
 
   // ---- appearance ----
   theme: Theme;
@@ -156,6 +158,7 @@ export interface VState {
   deleteTask: (id: string) => void;
   createProject: (p: Partial<Project>) => Promise<Project>;
   deleteProject: (pid: string) => Promise<void>;
+  patchProjectMeta: (pid: string, patch: any, toast?: string) => Promise<void>;
   markAllRead: () => void;
   markRead: (id: string) => void;
   autoSchedule: () => void;
@@ -180,6 +183,7 @@ export const useStore = create<VState>((set, get) => ({
   workspaces: [],
   categories: [],
   projects: [],
+  templates: [],
   tasks: [],
   inbox: [],
   chatChannels: [],
@@ -192,6 +196,7 @@ export const useStore = create<VState>((set, get) => ({
   online: {},
   comments: {},
   files: {},
+  activity: {},
 
   theme: (localStorage.getItem('velox-theme') as Theme) || 'light',
   accent: localStorage.getItem('velox-accent') || 'indigo',
@@ -314,6 +319,7 @@ export const useStore = create<VState>((set, get) => ({
         workspaces: b.workspaces,
         categories: b.categories,
         projects: b.projects,
+        templates: b.templates ?? [],
         tasks: b.tasks,
         inbox: b.inbox,
         chatChannels: b.chatChannels,
@@ -374,6 +380,7 @@ export const useStore = create<VState>((set, get) => ({
   },
 
   loadDetail: async (id) => {
+    api.taskActivity(id).then((a) => set((s) => ({ activity: { ...s.activity, [id]: a } }))).catch(() => {});
     if (get().comments[id]) return;
     try {
       const d = await api.taskDetail(id);
@@ -465,7 +472,26 @@ export const useStore = create<VState>((set, get) => ({
       if (!next && s.screen === 'project') patch.screen = 'home';
     }
     set(patch);
-    get().pushToast('Project deleted');
+    get().pushToast('Project moved to Trash — restore it within 30 days');
+  },
+
+  // Patch project fields (rename/color/archive/…) and sync local state.
+  patchProjectMeta: async (pid, patch, toast) => {
+    const upd = await api.patchProject(pid, patch);
+    if (patch.archived) {
+      const s = get();
+      const remaining = s.projects.filter((p) => p.id !== pid);
+      const st: Partial<VState> = { projects: remaining };
+      if (s.projectId === pid) {
+        const next = remaining.find((p) => p.ws === s.ws);
+        st.projectId = next?.id ?? '';
+        if (!next && s.screen === 'project') st.screen = 'home';
+      }
+      set(st);
+    } else {
+      set((s) => ({ projects: s.projects.map((p) => (p.id === pid ? { ...p, ...upd, shareToken: p.shareToken } : p)) }));
+    }
+    if (toast) get().pushToast(toast);
   },
 
   markAllRead: () => {

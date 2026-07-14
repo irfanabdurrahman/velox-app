@@ -62,7 +62,7 @@ export function registerRealtimeRoutes(app: Express) {
   app.post('/api/notif/test', requireAuth, h(async (req, res) => {
     const uid = req.user!.id;
     await prisma.notification.create({
-      data: { id: `n_${nanoid(8)}`, userId: uid, kind: 'test', ic: '🔔', unread: true, whenTxt: 'just now', txt: 'This is a test notification from Velox', ord: -Date.now() },
+      data: { id: `n_${nanoid(8)}`, userId: uid, kind: 'test', ic: '🔔', unread: true, whenTxt: 'just now', txt: 'This is a test notification from Velox', ord: -Math.floor(Date.now() / 1000) },
     });
     await sendPush(uid, 'Velox test', 'Push is working'); // no-op unless push is configured
     res.json({ inApp: true, push: pushEnabled() });

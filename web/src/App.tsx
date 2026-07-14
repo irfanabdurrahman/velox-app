@@ -69,10 +69,12 @@ function Shell() {
   const screen = useStore((s) => s.screen);
   useInteractions();
   useRealtime();
+  // phones/small tablets: start with the sidebar collapsed to icon rail
+  useEffect(() => { if (window.innerWidth < 760) useStore.getState().set({ sb: true }); }, []);
 
   return (
     <div
-      onMouseDown={() => closeMenus({ wsMenu: false, notifOpen: false, avMenu: false, shareOpen: false, viewsOpen: false, filterOpen: false, colMenu: false, cellMenu: null })}
+      onMouseDown={() => closeMenus({ wsMenu: false, notifOpen: false, avMenu: false, shareOpen: false, viewsOpen: false, filterOpen: false, colMenu: false, cellMenu: null, projMenuOpen: false })}
       style={{ position: 'fixed', inset: 0, display: 'flex', background: 'var(--bg)', color: 'var(--txt)', fontSize: 14, overflow: 'hidden', fontFamily: 'Inter, system-ui, sans-serif' }}
     >
       <Sidebar />

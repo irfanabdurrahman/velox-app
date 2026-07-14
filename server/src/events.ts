@@ -75,8 +75,36 @@ async function createTaskNotifications(event: string, payload: any, actorId?: st
   const ic = event === 'comment.added' ? '💬' : event === 'status.changed' ? '⟳' : '👤';
   for (const userId of recipients) {
     await prisma.notification.create({
-      data: { id: `n_${Math.random().toString(36).slice(2, 11)}`, userId, kind, ic, unread: true, whenTxt: 'just now', txt: text, ref: taskId, ord: -Date.now() },
+      data: { id: `n_${Math.random().toString(36).slice(2, 11)}`, userId, kind, ic, unread: true, whenTxt: 'just now', txt: text, ref: taskId, ord: -Math.floor(Date.now() / 1000) },
     });
     broadcast('user:' + userId, { type: 'notification', payload: { taskId, text } });
+  }
+}
+
+// When a task completes, tell assignees of the tasks it was blocking that they
+// are now unblocked (finish-to-start dependencies within the same project).
+export async function notifyUnblocked(done: { id: string; name: string; projectId: string }, workspaceId: string, actorId?: string) {
+  const siblings = await prisma.task.findMany({
+    where: { projectId: done.projectId, deletedAt: null, st: { not: 'done' } },
+    select: { id: true, name: true, assigneeId: true, deps: true, assignees: { select: { userId: true } } },
+  });
+  for (const t of siblings) {
+    const deps = (t.deps as any[]) || [];
+    if (!deps.some((d) => d && d.t === done.id)) continue;
+    // only notify when EVERY dependency of the waiting task is now done
+    const depIds = deps.map((d) => d?.t).filter(Boolean);
+    const open = await prisma.task.count({ where: { id: { in: depIds }, st: { not: 'done' }, deletedAt: null } });
+    if (open) continue;
+    const recipients = new Set<string>();
+    if (t.assigneeId) recipients.add(t.assigneeId);
+    t.assignees.forEach((a) => recipients.add(a.userId));
+    if (actorId) recipients.delete(actorId);
+    for (const userId of recipients) {
+      const text = `"${t.name}" is unblocked — its dependency "${done.name}" is done`;
+      await prisma.notification.create({
+        data: { id: `n_${Math.random().toString(36).slice(2, 11)}`, userId, kind: 'status', ic: '🔓', unread: true, whenTxt: 'just now', txt: text, ref: t.id, ord: -Math.floor(Date.now() / 1000) },
+      });
+      broadcast('user:' + userId, { type: 'notification', payload: { taskId: t.id, text } });
+    }
   }
 }

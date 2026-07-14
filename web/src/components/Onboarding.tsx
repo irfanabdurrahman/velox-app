@@ -2,7 +2,7 @@ import { useStore, aliasOf } from '../store';
 import { Hover } from './Hover';
 import { ACCENT_SWATCH } from '../lib/meta';
 import { fmt, TODAY, dowIdx } from '../lib/dates';
-import { getToken } from '../api';
+import { api, getToken } from '../api';
 
 // ---- scheduling helpers: sequential phases starting TODAY, ~10 working days each ----
 const nextWorkday = (d: number) => { let x = d; while (dowIdx(x) >= 5) x++; return x; };
@@ -167,6 +167,23 @@ export function Onboarding() {
     const isAi = mode === 'ai' && !!onb.wbs;
     const isTpl = mode === 'tpl' && !!onb.tpl;
     if (!(isAi || isTpl) || onb.creating) return;
+    // user-saved template → server-side duplicate carries tasks/sections/fields
+    if (isTpl && typeof onb.tpl === 'string' && onb.tpl.startsWith('saved:')) {
+      const tplId = onb.tpl.slice(6);
+      const tpl = s.templates.find((p) => p.id === tplId);
+      const nm = (tpl?.name || 'New project').replace(/ \(template\)$/, '');
+      setOnb({ creating: true });
+      try {
+        const np = await api.duplicateProject(tplId, nm);
+        await s.bootstrap();
+        s.set({ onb: null, screen: 'project', projectId: np.id, view: 'gantt' });
+        s.pushToast(`"${np.name}" created from your template`);
+      } catch (e: any) {
+        setOnb({ creating: false });
+        s.pushToast('Project not created — ' + (e?.message || 'server rejected the request'), 'bad');
+      }
+      return;
+    }
     const name = isAi ? ((onb.desc || '').trim().slice(0, 48) || 'AI project') : (onb.tpl === 'Blank project' ? 'Untitled project' : onb.tpl);
     const code = (name.replace(/[^A-Za-z ]/g, '').split(/\s+/).filter(Boolean).map((w: string) => w[0]).join('').slice(0, 3) || 'NEW').toUpperCase();
     const targetWs = onb.createdWs?.id || s.ws;
@@ -253,6 +270,12 @@ export function Onboarding() {
                   <Hover key={t.n} onClick={() => setOnb({ tpl: t.n })} style={{ border: `1.5px solid ${onb.tpl === t.n ? 'var(--acc)' : 'var(--line)'}`, background: onb.tpl === t.n ? 'var(--accS)' : 'transparent', borderRadius: 12, padding: '11px 13px', cursor: 'pointer' }} hover={{ borderColor: 'var(--acc)' }}>
                     <div style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 2 }}>{t.n}</div>
                     <div style={{ fontSize: 10.5, color: 'var(--txt3)' }}>{t.d}</div>
+                  </Hover>
+                ))}
+                {s.templates.filter((p) => p.ws === (onb.createdWs?.id || s.ws)).map((p) => (
+                  <Hover key={p.id} onClick={() => setOnb({ tpl: 'saved:' + p.id })} style={{ border: `1.5px solid ${onb.tpl === 'saved:' + p.id ? 'var(--acc)' : 'var(--line)'}`, background: onb.tpl === 'saved:' + p.id ? 'var(--accS)' : 'transparent', borderRadius: 12, padding: '11px 13px', cursor: 'pointer' }} hover={{ borderColor: 'var(--acc)' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, marginBottom: 2 }}>{p.name}</div>
+                    <div style={{ fontSize: 10.5, color: 'var(--txt3)' }}>Your template · {p.code}</div>
                   </Hover>
                 ))}
               </div>

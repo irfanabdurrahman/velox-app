@@ -1,8 +1,10 @@
 import type { Express } from 'express';
 import { z } from 'zod';
 import { nanoid } from 'nanoid';
-import { prisma, requireAuth, h, bad, HttpError, assertCan, workspaceOfProject } from '../ctx.ts';
+import { prisma, requireAuth, h, bad, HttpError, assertCan, assertMember, workspaceOfProject, EP } from '../ctx.ts';
 import { emit } from '../events.ts';
+
+const projDTO = (p: any) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy, archived: p.archived, shareToken: p.shareToken ?? null });
 
 export function registerProjectRoutes(app: Express) {
   // ---- sections -----------------------------------------------------------
@@ -75,13 +77,70 @@ export function registerProjectRoutes(app: Express) {
     res.json({ id: pr.id, name: pr.name, code: pr.code, cat: pr.categoryId, ws: pr.workspaceId, owner: pr.ownerId, st: pr.st, prog: pr.prog, due: pr.due, color: pr.color, privacy: pr.privacy, archived: pr.archived });
   }));
 
-  // ---- delete a whole project (permanent; cascades to tasks/sections/etc) --
+  // ---- delete a whole project (soft -> trash for 30 days; ?hard=1 purges) --
   app.delete('/api/projects/:pid', requireAuth, h(async (req: any, res) => {
     const ws = await workspaceOfProject(req.params.pid);
     await assertCan(req.user.id, ws, 'ADMIN');
-    const pr = await prisma.project.delete({ where: { id: req.params.pid } });
+    if (req.query.hard === '1') {
+      const pr = await prisma.project.delete({ where: { id: req.params.pid } });
+      emit(ws, 'project.deleted', { projectId: pr.id, name: pr.name, hard: true }, req.user.id);
+      return res.json({ ok: true });
+    }
+    const pr = await prisma.project.update({ where: { id: req.params.pid }, data: { deletedAt: new Date(), shareToken: null } });
     emit(ws, 'project.deleted', { projectId: pr.id, name: pr.name }, req.user.id);
     res.json({ ok: true });
+  }));
+  app.post('/api/projects/:pid/restore', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfProject(req.params.pid);
+    await assertCan(req.user.id, ws, 'ADMIN');
+    const pr = await prisma.project.update({ where: { id: req.params.pid }, data: { deletedAt: null } });
+    res.json(projDTO(pr));
+  }));
+
+  // ---- trashed / archived project listings (Trash screen) ------------------
+  app.get('/api/ws/:ws/trash-projects', requireAuth, h(async (req: any, res) => {
+    await assertCan(req.user.id, req.params.ws, 'MANAGER');
+    const rows = await prisma.project.findMany({ where: { workspaceId: req.params.ws, deletedAt: { not: null } }, orderBy: { deletedAt: 'desc' } });
+    res.json(rows.map((p) => ({ ...projDTO(p), deletedAt: p.deletedAt })));
+  }));
+  app.get('/api/ws/:ws/archived-projects', requireAuth, h(async (req: any, res) => {
+    await assertCan(req.user.id, req.params.ws, 'MANAGER');
+    const rows = await prisma.project.findMany({ where: { workspaceId: req.params.ws, archived: true, deletedAt: null }, orderBy: { name: 'asc' } });
+    res.json(rows.map(projDTO));
+  }));
+
+  // ---- public read-only share link -----------------------------------------
+  app.post('/api/projects/:pid/share', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfProject(req.params.pid);
+    await assertCan(req.user.id, ws, 'MANAGER');
+    const token = req.body?.on ? nanoid(24) : null;
+    const pr = await prisma.project.update({ where: { id: req.params.pid }, data: { shareToken: token } });
+    res.json({ token: pr.shareToken });
+  }));
+
+  // ---- CSV export -----------------------------------------------------------
+  app.get('/api/projects/:pid/export.csv', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfProject(req.params.pid);
+    await assertMember(req.user.id, ws);
+    const [proj, tasks, sections, users] = await Promise.all([
+      prisma.project.findUnique({ where: { id: req.params.pid } }),
+      prisma.task.findMany({ where: { projectId: req.params.pid, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }] }),
+      prisma.section.findMany({ where: { projectId: req.params.pid } }),
+      prisma.user.findMany({ select: { id: true, name: true } }),
+    ]);
+    if (!proj) throw new HttpError(404, 'not found');
+    const secName = Object.fromEntries(sections.map((x) => [x.id, x.name]));
+    const uName = Object.fromEntries(users.map((u) => [u.id, u.name]));
+    const iso = (n: number | null) => (n == null ? '' : new Date(EP + n * 864e5).toISOString().slice(0, 10));
+    const esc = (v: any) => { const t = v == null ? '' : String(v); return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+    const head = ['Task', 'Section', 'Assignee', 'Status', 'Priority', 'Progress %', 'Start', 'Due', 'Milestone', 'Estimate'];
+    const lines = [head.join(',')];
+    for (const t of tasks) {
+      lines.push([t.name, t.sectionId ? secName[t.sectionId] || '' : '', t.assigneeId ? uName[t.assigneeId] || t.assigneeId : '', t.st, t.pr, t.pg, iso(t.s), iso(t.e), t.ms ? 'yes' : '', t.est || ''].map(esc).join(','));
+    }
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${proj.code || 'project'}-export.csv"`);
+    res.send('\ufeff' + lines.join('\n'));
   }));
 
   // ---- duplicate a whole project (optionally as template) -----------------
@@ -91,7 +150,8 @@ export function registerProjectRoutes(app: Express) {
     const src = await prisma.project.findUnique({ where: { id: req.params.pid }, include: { tasks: { where: { deletedAt: null } }, sections: true, customFields: true } });
     if (!src) throw new HttpError(404, 'not found');
     const newPid = nanoid(10);
-    await prisma.project.create({ data: { id: newPid, name: (req.body?.name || src.name + ' (copy)').slice(0, 200), code: src.code, workspaceId: ws, categoryId: src.categoryId, ownerId: req.user.id, color: src.color, privacy: src.privacy } });
+    const asTemplate = !!req.body?.asTemplate;
+    await prisma.project.create({ data: { id: newPid, name: (req.body?.name || src.name + (asTemplate ? ' (template)' : ' (copy)')).slice(0, 200), code: src.code, workspaceId: ws, categoryId: src.categoryId, ownerId: req.user.id, color: src.color, privacy: src.privacy, isTemplate: asTemplate } });
     const secMap: Record<string, string> = {};
     for (const s of src.sections) { const ns = await prisma.section.create({ data: { projectId: newPid, name: s.name, ord: s.ord } }); secMap[s.id] = ns.id; }
     for (const f of src.customFields) await prisma.customField.create({ data: { projectId: newPid, name: f.name, kind: f.kind, config: f.config as any, ord: f.ord } });

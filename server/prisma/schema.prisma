@@ -105,6 +105,8 @@ model Project {
   privacy     String    @default("workspace") // workspace | private | hidden
   archived    Boolean   @default(false)
   isTemplate  Boolean   @default(false)
+  deletedAt   DateTime? // soft delete -> trash (purged after 30 days)
+  shareToken  String?   @unique // public read-only share link token
   createdAt   DateTime  @default(now())
 
   tasks         Task[]
@@ -115,6 +117,7 @@ model Project {
   taskLinks     TaskProject[]
 
   @@index([workspaceId])
+  @@index([deletedAt])
 }
 
 // A group of tasks within a project (List/Board section headers).

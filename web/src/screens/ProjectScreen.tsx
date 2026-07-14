@@ -1,4 +1,5 @@
 import { useStore } from '../store';
+import { api } from '../api';
 import { Hover } from '../components/Hover';
 import { CellMenu } from '../components/CellMenu';
 import { stMeta } from '../lib/meta';
@@ -24,9 +25,40 @@ export function ProjectScreen() {
   const stKeys = ['mut', 'prog', 'risk', 'bad', 'done'];
   const readOnly = ['GUEST', 'EXEC_VIEWER'].includes(s.myRoles[s.ws] || '');
   const canDelete = ['OWNER', 'ADMIN'].includes(s.myRoles[s.ws] || '');
+  const canManage = ['OWNER', 'ADMIN', 'MANAGER'].includes(s.myRoles[s.ws] || '');
+  const COLORS = ['#6366F1', '#0891B2', '#059669', '#D97706', '#DC2626', '#7C3AED', '#DB2777', '#475569'];
+  const mi = { display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, cursor: 'pointer', fontSize: 12, color: 'var(--txt2)' } as const;
+  const closeMenu = () => s.set({ projMenuOpen: false });
   const delProject = () => {
-    if (!window.confirm(`Delete project "${proj.name}"? This permanently removes all of its tasks, sections and history.`)) return;
+    closeMenu();
+    if (!window.confirm(`Move project "${proj.name}" to Trash? You can restore it within 30 days.`)) return;
     s.deleteProject(proj.id).catch((e: any) => s.pushToast(e?.message || 'Delete failed', 'bad'));
+  };
+  const renameProj = () => {
+    closeMenu();
+    const name = window.prompt('Project name', proj.name);
+    if (name && name.trim() && name.trim() !== proj.name) s.patchProjectMeta(proj.id, { name: name.trim() }, 'Project renamed').catch((e: any) => s.pushToast(e?.message || 'Rename failed', 'bad'));
+  };
+  const duplicateProj = async () => {
+    closeMenu();
+    try { const np = await api.duplicateProject(proj.id); s.pushToast(`"${np.name}" created`); await s.bootstrap(); s.set({ screen: 'project', projectId: np.id }); }
+    catch (e: any) { s.pushToast(e?.message || 'Duplicate failed', 'bad'); }
+  };
+  const saveTemplate = async () => {
+    closeMenu();
+    try { await api.saveAsTemplate(proj.id); s.pushToast('Saved as template — pick it under "From template" when creating a project'); await s.bootstrap(); }
+    catch (e: any) { s.pushToast(e?.message || 'Save failed', 'bad'); }
+  };
+  const exportCsv = () => { closeMenu(); api.downloadProjectCsv(proj.id, proj.name).then(() => s.pushToast('CSV exported')).catch((e: any) => s.pushToast(e?.message || 'Export failed', 'bad')); };
+  const archiveProj = () => {
+    closeMenu();
+    if (!window.confirm(`Archive "${proj.name}"? It moves out of the sidebar; unarchive any time from the Trash screen.`)) return;
+    s.patchProjectMeta(proj.id, { archived: true }, 'Project archived — find it on the Trash screen').catch((e: any) => s.pushToast(e?.message || 'Archive failed', 'bad'));
+  };
+  const setShare = (on: boolean) => {
+    api.shareProject(proj.id, on)
+      .then((r: any) => { s.set((x) => ({ projects: x.projects.map((p) => (p.id === proj.id ? { ...p, shareToken: r.token } : p)) })); s.pushToast(on ? 'Share link created' : 'Share link disabled'); })
+      .catch((e: any) => s.pushToast(e?.message || 'Share failed', 'bad'));
   };
 
   // Real project avatars: owner + members who have tasks assigned in this project.
@@ -61,25 +93,48 @@ export function ProjectScreen() {
             {s.shareOpen && (
               <div style={{ position: 'absolute', top: 34, right: 0, width: 290, background: 'var(--glass)', backdropFilter: 'blur(14px)', border: '1px solid var(--line)', borderRadius: 13, boxShadow: 'var(--sh3)', padding: 13, zIndex: 70, animation: 'vpop .16s ease' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Share project</div>
-                <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-                  <span style={{ flex: 1, fontSize: 11, color: 'var(--txt2)', background: 'var(--inputBg)', border: '1px solid var(--line)', borderRadius: 7, padding: '6px 9px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>velox.app/p/krw-2026</span>
-                  <span onClick={() => { s.set({ shareOpen: false }); s.pushToast('Link copied to clipboard'); }} style={{ fontSize: 11, fontWeight: 600, color: '#fff', background: 'var(--acc)', borderRadius: 7, padding: '6px 11px', cursor: 'pointer', flex: 'none' }}>Copy</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--txt2)' }}><span>Anyone with link · <b style={{ color: 'var(--txt)' }}>can view</b></span><span style={{ color: 'var(--accT)', fontWeight: 600, cursor: 'pointer' }}>Change</span></div>
+                {proj.shareToken ? (<>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                    <span style={{ flex: 1, fontSize: 11, color: 'var(--txt2)', background: 'var(--inputBg)', border: '1px solid var(--line)', borderRadius: 7, padding: '6px 9px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{location.origin + '/share/' + proj.shareToken}</span>
+                    <span onClick={() => { navigator.clipboard?.writeText(location.origin + '/share/' + proj.shareToken).catch(() => {}); s.pushToast('Link copied to clipboard'); }} style={{ fontSize: 11, fontWeight: 600, color: '#fff', background: 'var(--acc)', borderRadius: 7, padding: '6px 11px', cursor: 'pointer', flex: 'none' }}>Copy</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 11.5, color: 'var(--txt2)' }}>
+                    <span>Anyone with link · <b style={{ color: 'var(--txt)' }}>can view</b></span>
+                    {canManage && <span onClick={() => setShare(false)} style={{ color: 'var(--bdT)', fontWeight: 600, cursor: 'pointer' }}>Disable</span>}
+                  </div>
+                </>) : (<>
+                  <div style={{ fontSize: 11.5, color: 'var(--txt2)', marginBottom: 10 }}>Create a public, read-only link so people outside this workspace can view the plan.</div>
+                  {canManage
+                    ? <span onClick={() => setShare(true)} style={{ display: 'inline-block', fontSize: 11, fontWeight: 600, color: '#fff', background: 'var(--acc)', borderRadius: 7, padding: '6px 12px', cursor: 'pointer' }}>Create link</span>
+                    : <span style={{ fontSize: 11, color: 'var(--txt3)' }}>Ask a manager to create a share link.</span>}
+                </>)}
               </div>
             )}
           </div>
-          {canDelete && (
+          {(canManage || canDelete) && (
             <div style={{ position: 'relative' }}>
               <Hover onClick={() => s.set((x) => ({ projMenuOpen: !x.projMenuOpen, shareOpen: false }))} title="Project actions" style={{ width: 27, height: 27, borderRadius: 8, border: '1px solid var(--line)', display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--txt2)', flex: 'none' }} hover={{ background: 'var(--hover)' }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" /></svg>
               </Hover>
               {s.projMenuOpen && (
-                <div style={{ position: 'absolute', top: 32, right: 0, width: 190, background: 'var(--glass)', backdropFilter: 'blur(14px)', border: '1px solid var(--line)', borderRadius: 12, boxShadow: 'var(--sh3)', padding: 5, zIndex: 70, animation: 'vpop .15s ease' }}>
-                  <Hover onClick={delProject} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--bdT)' }} hover={{ background: 'var(--bdB)' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14" /></svg>
-                    Delete project
-                  </Hover>
+                <div style={{ position: 'absolute', top: 32, right: 0, width: 214, background: 'var(--glass)', backdropFilter: 'blur(14px)', border: '1px solid var(--line)', borderRadius: 12, boxShadow: 'var(--sh3)', padding: 5, zIndex: 70, animation: 'vpop .15s ease' }}>
+                  {canManage && <>
+                    <Hover onClick={renameProj} style={mi} hover={{ background: 'var(--hover)' }}>Rename project</Hover>
+                    <div style={{ display: 'flex', gap: 5, padding: '6px 9px' }}>
+                      {COLORS.map((c) => <span key={c} onClick={() => s.patchProjectMeta(proj.id, { color: c })} style={{ width: 16, height: 16, borderRadius: 5, background: c, cursor: 'pointer', border: proj.color === c ? '2px solid var(--txt)' : '2px solid transparent' }} />)}
+                    </div>
+                    <Hover onClick={duplicateProj} style={mi} hover={{ background: 'var(--hover)' }}>Duplicate project</Hover>
+                    <Hover onClick={saveTemplate} style={mi} hover={{ background: 'var(--hover)' }}>Save as template</Hover>
+                    <Hover onClick={exportCsv} style={mi} hover={{ background: 'var(--hover)' }}>Export CSV</Hover>
+                    <Hover onClick={archiveProj} style={mi} hover={{ background: 'var(--hover)' }}>Archive project</Hover>
+                  </>}
+                  {canDelete && <>
+                    <div style={{ height: 1, background: 'var(--line2)', margin: '4px 2px' }} />
+                    <Hover onClick={delProject} style={{ ...mi, fontWeight: 600, color: 'var(--bdT)' }} hover={{ background: 'var(--bdB)' }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14" /></svg>
+                      Delete project
+                    </Hover>
+                  </>}
                 </div>
               )}
             </div>

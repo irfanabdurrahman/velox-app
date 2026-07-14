@@ -4,6 +4,7 @@ export type Category = { id: string; label: string };
 export type Project = {
   id: string; name: string; code: string; cat: string; ws: string;
   owner: string; st: string; prog: number; due: number | null; color: string;
+  privacy?: string; shareToken?: string | null;
 };
 export type Dep = { t: string; type?: 'FS' | 'SS' | 'FF' | 'SF'; lag?: number; crit?: boolean };
 export type ChecklistItem = { id: string; txt: string; done: boolean };

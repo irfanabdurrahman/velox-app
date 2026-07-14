@@ -256,6 +256,12 @@ export function SlideOver() {
 
   // Activity: only events derivable from real task data.
   const acts: { ic: string; txt: string }[] = [];
+  const ACT_TXT: Record<string, string> = { 'task.created': 'created this task', 'task.updated': 'updated this task', 'task.status': 'changed status', 'comment.added': 'commented' };
+  const fmtWhen = (iso: string) => { const d = new Date(iso); return isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }); };
+  (s.activity[t.id] || []).forEach((a: any) => {
+    const stTxt = a.action === 'task.status' && a.meta?.st ? ' → ' + stMeta(a.meta.st).l : '';
+    acts.push({ ic: a.actor?.ini || '•', txt: `${a.actor?.n || 'Someone'} ${ACT_TXT[a.action] || a.action}${stTxt} · ${fmtWhen(a.when)}` });
+  });
   if (t.bs != null && t.be != null && (t.bs !== t.s || t.be !== t.e)) acts.push({ ic: '📅', txt: 'Schedule shifted from baseline ' + fmt(t.bs) + ' – ' + fmt(t.be) + ' → ' + (t.s != null ? fmt(t.s) : '—') + ' – ' + (t.e != null ? fmt(t.e) : '—') });
   if (timeEntries.length) acts.push({ ic: '⏱', txt: totalTxt + ' logged across ' + timeEntries.length + ' entr' + (timeEntries.length > 1 ? 'ies' : 'y') });
   if (files.length) acts.push({ ic: '📎', txt: files.length + ' attachment' + (files.length > 1 ? 's' : '') });

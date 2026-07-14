@@ -95,6 +95,33 @@ export const api = {
   patchProject: (pid: string, patch: any) => req(`/projects/${pid}`, { method: 'PATCH', body: JSON.stringify(patch) }),
   duplicateProject: (pid: string, name?: string) => req(`/projects/${pid}/duplicate`, { method: 'POST', body: JSON.stringify({ name }) }),
   deleteProject: (pid: string) => req(`/projects/${pid}`, { method: 'DELETE' }),
+  purgeProject: (pid: string) => req(`/projects/${pid}?hard=1`, { method: 'DELETE' }),
+  restoreProject: (pid: string) => req(`/projects/${pid}/restore`, { method: 'POST' }),
+  trashProjects: (ws: string) => req(`/ws/${ws}/trash-projects`),
+  archivedProjects: (ws: string) => req(`/ws/${ws}/archived-projects`),
+  shareProject: (pid: string, on: boolean) => req(`/projects/${pid}/share`, { method: 'POST', body: JSON.stringify({ on }) }),
+  saveAsTemplate: (pid: string) => req(`/projects/${pid}/duplicate`, { method: 'POST', body: JSON.stringify({ asTemplate: true }) }),
+  taskActivity: (id: string) => req(`/tasks/${id}/activity`),
+  goals: (ws: string) => req(`/ws/${ws}/goals`),
+  createGoal: (ws: string, name: string) => req(`/ws/${ws}/goals`, { method: 'POST', body: JSON.stringify({ name }) }),
+  patchGoal: (id: string, patch: any) => req(`/goals/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+  delGoal: (id: string) => req(`/goals/${id}`, { method: 'DELETE' }),
+  addKr: (goalId: string, kr: any) => req(`/goals/${goalId}/krs`, { method: 'POST', body: JSON.stringify(kr) }),
+  patchKr: (id: string, patch: any) => req(`/krs/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+  delKr: (id: string) => req(`/krs/${id}`, { method: 'DELETE' }),
+  downloadProjectCsv: async (pid: string, name: string) => {
+    const headers: Record<string, string> = {};
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch(`/api/projects/${pid}/export.csv`, { headers, credentials: 'include' });
+    if (!res.ok) throw new Error('export failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${name.replace(/[^\w.-]+/g, '_')}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  },
 
   // attachments
   uploadFile: async (taskId: string, file: File) => {

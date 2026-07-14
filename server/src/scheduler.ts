@@ -27,10 +27,11 @@ export function startSchedulers() {
   }, 30 * 60 * 1000);
 }
 
-// Permanently remove tasks trashed > 30 days ago.
+// Permanently remove tasks and projects trashed > 30 days ago.
 async function purgeTrash() {
   const cutoff = new Date(Date.now() - 30 * 864e5);
   await prisma.task.deleteMany({ where: { deletedAt: { lt: cutoff } } });
+  await prisma.project.deleteMany({ where: { deletedAt: { lt: cutoff } } });
 }
 
 // Fire due.soon rules for tasks due within 2 days and not done.

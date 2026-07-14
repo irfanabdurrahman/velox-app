@@ -20,6 +20,8 @@ import { createServer } from 'node:http';
 import { attachWs } from './ws.ts';
 import { emit } from './events.ts';
 import { mountRoutes } from './routes/index.ts';
+import { logAudit } from './routes/authx.ts';
+import { notifyUnblocked } from './events.ts';
 import { startSchedulers } from './scheduler.ts';
 
 const PORT = Number(process.env.PORT) || 4000;
@@ -128,14 +130,14 @@ app.get('/api/bootstrap', requireAuth, h(async (req, res) => {
   const uid = req.user!.id;
   const wsIds = await accessibleWorkspaceIds(uid);
   // hidden projects are only visible to their owner
-  const projWhere = { workspaceId: { in: wsIds }, archived: false, OR: [{ privacy: { not: 'hidden' } }, { ownerId: uid }] };
+  const projWhere = { workspaceId: { in: wsIds }, archived: false, deletedAt: null, isTemplate: false, OR: [{ privacy: { not: 'hidden' } }, { ownerId: uid }] };
   const [me, workspaces, categories, projects, tasks, notifs, memberships, myDms, sections, customFields, statusUpdates] = await Promise.all([
     prisma.user.findUnique({ where: { id: uid } }),
     prisma.workspace.findMany({ where: { id: { in: wsIds } } }),
     prisma.category.findMany(),
     prisma.project.findMany({ where: projWhere }),
     // stable ordering; exclude trashed
-    prisma.task.findMany({ where: { project: { workspaceId: { in: wsIds } }, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }], include: { assignees: true, watchers: true, homes: true } }),
+    prisma.task.findMany({ where: { project: { workspaceId: { in: wsIds }, deletedAt: null, isTemplate: false }, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }], include: { assignees: true, watchers: true, homes: true } }),
     prisma.notification.findMany({ where: { userId: uid }, orderBy: { ord: 'asc' } }),
     prisma.membership.findMany({ where: { workspaceId: { in: wsIds } } }),
     prisma.chatChannelMember.findMany({ where: { userId: uid }, select: { channelId: true } }),
@@ -170,7 +172,8 @@ app.get('/api/bootstrap', requireAuth, h(async (req, res) => {
     myRoles: roleByUser[uid] || {},
     workspaces,
     categories,
-    projects: projects.map((p) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy })),
+    projects: projects.map((p) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy, shareToken: p.shareToken ?? null })),
+    templates: (await prisma.project.findMany({ where: { workspaceId: { in: wsIds }, isTemplate: true, deletedAt: null } })).map((p) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy })),
     tasks: tasks.map(taskDTO),
     sections: sections.map((s) => ({ id: s.id, pid: s.projectId, name: s.name, ord: s.ord })),
     customFields: customFields.map((c) => ({ id: c.id, pid: c.projectId, name: c.name, kind: c.kind, config: c.config, ord: c.ord })),
@@ -337,6 +340,7 @@ app.post('/api/tasks', requireAuth, h(async (req, res) => {
   if (d.watchers?.length) await prisma.taskWatcher.createMany({ data: d.watchers.map((u: string) => ({ taskId: created.id, userId: u })), skipDuplicates: true });
   const full = await prisma.task.findUnique({ where: { id: created.id }, include: { assignees: true, watchers: true, homes: true } });
   emit(ws, 'task.created', { task: taskDTO(full), taskId: created.id }, req.user!.id);
+  logAudit(ws, req.user!.id, 'task.created', created.id, {});
   res.json(taskDTO(full));
 }));
 
@@ -376,6 +380,8 @@ app.patch('/api/tasks/:id', requireAuth, h(async (req, res) => {
   }
   emit(ws, stChanged ? 'status.changed' : 'task.updated', { task: taskDTO(updated), taskId: updated.id, st: updated.st }, req.user!.id);
   if (updated.ms && updated.st === 'done') emit(ws, 'milestone.completed', { task: taskDTO(updated), taskId: updated.id }, req.user!.id);
+  logAudit(ws, req.user!.id, stChanged ? 'task.status' : 'task.updated', updated.id, { fields: Object.keys(data), st: stChanged ? updated.st : undefined });
+  if (stChanged && updated.st === 'done') notifyUnblocked({ id: updated.id, name: updated.name, projectId: updated.projectId }, ws, req.user!.id).catch(() => {});
   res.json(taskDTO(updated));
 }));
 
@@ -412,11 +418,12 @@ app.post('/api/tasks/:id/comments', requireAuth, h(async (req, res) => {
     for (const m of members) {
       const first = m.user.name.split(' ')[0].toLowerCase();
       if (m.userId !== req.user!.id && mentions.some((x) => first.startsWith(x) || m.user.name.toLowerCase().replace(/\s/g, '').includes(x))) {
-        await prisma.notification.create({ data: { id: `n_${nanoid(8)}`, userId: m.userId, kind: 'mention', ic: '@', unread: true, whenTxt: 'just now', txt: `You were mentioned on a task`, ref: req.params.id, ord: -Date.now() } });
+        await prisma.notification.create({ data: { id: `n_${nanoid(8)}`, userId: m.userId, kind: 'mention', ic: '@', unread: true, whenTxt: 'just now', txt: `You were mentioned on a task`, ref: req.params.id, ord: -Math.floor(Date.now() / 1000) } });
       }
     }
   }
   emit(ws, 'comment.added', { taskId: req.params.id, comment: { id: c.id, who: c.authorId, txt: c.txt } }, req.user!.id);
+  logAudit(ws, req.user!.id, 'comment.added', req.params.id, {});
   res.json({ id: c.id, who: c.authorId, when: c.whenTxt, txt: c.txt, rx: c.rx ?? [], parentId: c.parentId });
 }));
 
@@ -485,6 +492,51 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 // Wave 2–5 route modules (tasks-extended, projects-extended, integrations, MCP,
 // reports, 2FA/SSO/export, uploads, status updates, goals).
+// ---- public read-only share page (token-gated, no auth) -------------------
+app.get('/share/:token', h(async (req, res) => {
+  const esc = (v: any) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+  const proj = await prisma.project.findUnique({ where: { shareToken: req.params.token } });
+  if (!proj || proj.deletedAt) return res.status(404).send('<h3 style="font-family:sans-serif">Link not found or disabled</h3>');
+  const [tasks, sections] = await Promise.all([
+    prisma.task.findMany({ where: { projectId: proj.id, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }], include: { assignee: { select: { name: true } } } }),
+    prisma.section.findMany({ where: { projectId: proj.id }, orderBy: { ord: 'asc' } }),
+  ]);
+  const iso = (n: number | null) => (n == null ? '—' : new Date(EP + n * 864e5).toISOString().slice(0, 10));
+  const stLbl: Record<string, string> = { mut: 'Not started', prog: 'In progress', risk: 'At risk', bad: 'Off track', done: 'Done', ok: 'On track' };
+  const stCol: Record<string, string> = { mut: '#71717A', prog: '#4F46E5', risk: '#D97706', bad: '#DC2626', done: '#059669', ok: '#059669' };
+  const secName = Object.fromEntries(sections.map((x) => [x.id, x.name]));
+  const rows = tasks.map((t) => `<tr>
+    <td>${t.ms ? '◆ ' : ''}${esc(t.name)}</td>
+    <td>${esc(t.sectionId ? secName[t.sectionId] || '' : '')}</td>
+    <td>${esc(t.assignee?.name || '')}</td>
+    <td><span class="pill" style="color:${stCol[t.st] || '#71717A'}">${esc(stLbl[t.st] || t.st)}</span></td>
+    <td>${t.pg}%</td><td>${iso(t.s)}</td><td>${iso(t.e)}</td>
+  </tr>`).join('');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(proj.name)} — Velox (read-only)</title>
+<style>
+  body{font-family:Inter,system-ui,sans-serif;margin:0;background:#FAFAFA;color:#18181B}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 18px}
+  .hd{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .code{width:30px;height:30px;border-radius:8px;background:${esc(proj.color)};color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+  h1{font-size:20px;margin:0}.sub{color:#71717A;font-size:12.5px;margin-bottom:18px}
+  .bar{height:8px;border-radius:99px;background:#E4E4E7;overflow:hidden;margin:10px 0 22px}
+  .bar>div{height:100%;background:${esc(proj.color)}}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #E4E4E7;border-radius:12px;overflow:hidden;font-size:13px}
+  th{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#A1A1AA;text-align:left;padding:9px 12px;border-bottom:1px solid #E4E4E7}
+  td{padding:9px 12px;border-bottom:1px solid #F4F4F5}.pill{font-weight:700;font-size:11.5px}
+  .ft{color:#A1A1AA;font-size:11px;margin-top:16px}
+  @media(max-width:640px){td:nth-child(2),th:nth-child(2),td:nth-child(6),th:nth-child(6){display:none}}
+</style></head><body><div class="wrap">
+  <div class="hd"><span class="code">${esc(proj.code)}</span><h1>${esc(proj.name)}</h1></div>
+  <div class="sub">Read-only shared view · status: ${esc(stLbl[proj.st] || proj.st)} · ${tasks.length} tasks</div>
+  <div class="bar"><div style="width:${Math.max(0, Math.min(100, proj.prog))}%"></div></div>
+  <table><thead><tr><th>Task</th><th>Section</th><th>Assignee</th><th>Status</th><th>%</th><th>Start</th><th>Due</th></tr></thead><tbody>${rows}</tbody></table>
+  <div class="ft">Shared via Velox — this link is view-only.</div>
+</div></body></html>`);
+}));
+
 mountRoutes(app);
 
 const server = createServer(app);

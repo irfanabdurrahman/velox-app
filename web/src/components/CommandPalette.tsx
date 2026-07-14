@@ -29,12 +29,12 @@ export function CommandPalette() {
 
   const projRes: PalItem[] = s.projects.filter((p) => !q || p.name.toLowerCase().includes(q)).slice(0, q ? 5 : 3).map((p) => ({
     ic: p.code, icBgC: p.color, label: p.name, meta: (s.categories.find((c) => c.id === p.cat) || ({} as any)).label,
-    oC: () => set({ palette: false, screen: 'project', projectId: p.id }),
+    oC: () => set({ palette: false, screen: 'project', projectId: p.id, ws: p.ws }),
   }));
 
   const taskRes: PalItem[] = q ? s.tasks.filter((x) => x.name.toLowerCase().includes(q)).slice(0, 5).map((x) => ({
     ic: '✓', label: x.name, meta: (s.proj(x.pid) || ({} as any)).name,
-    oC: () => { set({ palette: false, screen: 'project', projectId: x.pid }); s.openTask(x.id); },
+    oC: () => { const pp = s.proj(x.pid); set({ palette: false, screen: 'project', projectId: x.pid, ws: pp ? pp.ws : s.ws }); s.openTask(x.id); },
   })) : [];
 
   const pplRes: PalItem[] = q ? Object.keys(s.members).filter((k) => s.members[k].n.toLowerCase().includes(q)).slice(0, 3).map((k) => ({

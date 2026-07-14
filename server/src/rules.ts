@@ -32,7 +32,7 @@ async function applyAction(action: any, payload: any, actorId?: string) {
       if (taskId && action.text) await prisma.comment.create({ data: { taskId, authorId: null, whenTxt: 'automation', txt: action.text, rx: [] } });
       break;
     case 'notify':
-      if (action.userId) await prisma.notification.create({ data: { id: `n_${Math.random().toString(36).slice(2, 11)}`, userId: action.userId, kind: 'ai', ic: '⚙', unread: true, whenTxt: 'just now', txt: action.text || 'Automation triggered', ref: taskId ?? null, ord: -Date.now() } });
+      if (action.userId) await prisma.notification.create({ data: { id: `n_${Math.random().toString(36).slice(2, 11)}`, userId: action.userId, kind: 'ai', ic: '⚙', unread: true, whenTxt: 'just now', txt: action.text || 'Automation triggered', ref: taskId ?? null, ord: -Math.floor(Date.now() / 1000) } });
       break;
     case 'call_webhook':
       if (action.url) {

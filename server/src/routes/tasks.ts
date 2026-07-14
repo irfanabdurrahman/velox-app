@@ -1,7 +1,7 @@
 import type { Express } from 'express';
 import { z } from 'zod';
 import { nanoid } from 'nanoid';
-import { prisma, requireAuth, h, bad, HttpError, assertCan, workspaceOfTask, workspaceOfProject, accessibleWorkspaceIds } from '../ctx.ts';
+import { prisma, requireAuth, h, bad, HttpError, assertCan, workspaceOfTask, workspaceOfProject, accessibleWorkspaceIds, assertMember } from '../ctx.ts';
 import { taskDTO } from '../index.ts';
 import { emit } from '../events.ts';
 
@@ -15,6 +15,18 @@ export function registerTaskRoutes(app: Express) {
       include: { project: { select: { name: true } } },
     });
     res.json(rows.map((t) => ({ ...taskDTO(t), projectName: t.project.name, deletedAt: t.deletedAt })));
+  }));
+
+  // ---- per-task activity log (from the workspace audit trail) -------------
+  app.get('/api/tasks/:id/activity', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfTask(req.params.id);
+    await assertMember(req.user.id, ws);
+    const rows = await prisma.auditLog.findMany({
+      where: { workspaceId: ws, target: req.params.id },
+      orderBy: { createdAt: 'desc' }, take: 50,
+      include: { actor: { select: { name: true, initials: true, color: true } } },
+    });
+    res.json(rows.map((r) => ({ id: r.id, action: r.action, meta: r.meta, when: r.createdAt, actor: r.actor ? { n: r.actor.name, ini: r.actor.initials, c: r.actor.color } : null })));
   }));
 
   app.post('/api/tasks/:id/restore', requireAuth, h(async (req: any, res) => {
