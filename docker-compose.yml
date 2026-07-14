@@ -16,6 +16,7 @@ services:
 
   server:
     build: ./server
+    container_name: velox-server
     restart: unless-stopped
     depends_on:
       postgres:

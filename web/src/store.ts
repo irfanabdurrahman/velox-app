@@ -85,6 +85,7 @@ export interface VState {
   filterOpen: boolean;
   viewsOpen: boolean;
   shareOpen: boolean;
+  projMenuOpen: boolean;
   asBusy: boolean;
   autoDone: boolean;
   present: boolean;
@@ -154,6 +155,7 @@ export interface VState {
   updateTask: (id: string, patch: Partial<Task>, toast?: string) => void;
   deleteTask: (id: string) => void;
   createProject: (p: Partial<Project>) => Promise<Project>;
+  deleteProject: (pid: string) => Promise<void>;
   markAllRead: () => void;
   markRead: (id: string) => void;
   autoSchedule: () => void;
@@ -225,6 +227,7 @@ export const useStore = create<VState>((set, get) => ({
   filterOpen: false,
   viewsOpen: false,
   shareOpen: false,
+  projMenuOpen: false,
   asBusy: false,
   autoDone: false,
   present: false,
@@ -443,6 +446,28 @@ export const useStore = create<VState>((set, get) => ({
     return created;
   },
 
+  // Permanently delete a project and scrub all of its state locally.
+  deleteProject: async (pid) => {
+    await api.deleteProject(pid);
+    const s = get();
+    const remaining = s.projects.filter((p) => p.id !== pid);
+    const patch: Partial<VState> = {
+      projects: remaining,
+      tasks: s.tasks.filter((t) => t.pid !== pid),
+      sections: s.sections.filter((x) => x.pid !== pid),
+      customFields: s.customFields.filter((x) => x.pid !== pid),
+      statusUpdates: s.statusUpdates.filter((x) => x.pid !== pid),
+      projMenuOpen: false,
+    };
+    if (s.projectId === pid) {
+      const next = remaining.find((p) => p.ws === s.ws);
+      patch.projectId = next?.id ?? '';
+      if (!next && s.screen === 'project') patch.screen = 'home';
+    }
+    set(patch);
+    get().pushToast('Project deleted');
+  },
+
   markAllRead: () => {
     set((s) => ({ inbox: s.inbox.map((n) => ({ ...n, unread: false })) }));
     api.markAllRead().catch(() => {});
@@ -527,6 +552,22 @@ export const useStore = create<VState>((set, get) => ({
       case 'task.deleted': {
         const ids = new Set<string>(p.ids || (p.taskId ? [p.taskId] : []));
         if (ids.size) set({ tasks: s.tasks.filter((x) => !ids.has(x.id)) });
+        break;
+      }
+      case 'project.deleted': {
+        if (!p.projectId) break;
+        const remaining = s.projects.filter((x) => x.id !== p.projectId);
+        const patch: Partial<VState> = {
+          projects: remaining,
+          tasks: s.tasks.filter((x) => x.pid !== p.projectId),
+          sections: s.sections.filter((x) => x.pid !== p.projectId),
+        };
+        if (s.projectId === p.projectId) {
+          const next = remaining.find((x) => x.ws === s.ws);
+          patch.projectId = next?.id ?? '';
+          if (!next && s.screen === 'project') patch.screen = 'home';
+        }
+        set(patch);
         break;
       }
       case 'notification':

@@ -1,0 +1,45 @@
+services:
+  server:
+    build: ./server
+    container_name: velox-server
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://velox:change-me@your-postgres-host:5432/velox?schema=public
+      JWT_ACCESS_SECRET: change-me-openssl-rand-hex-32
+      JWT_REFRESH_SECRET: change-me-openssl-rand-hex-32
+      ACCESS_TTL: 900
+      REFRESH_TTL_DAYS: 30
+      CORS_ORIGIN: https://velox.irfan-apps.online
+      COOKIE_SECURE: "true"
+      NODE_ENV: production
+      PORT: 4000
+      SEED_ON_START: "true"
+      SEED_DEMO_PASSWORD: change-me
+      UPLOAD_DIR: /data/uploads
+    networks:
+      - coolify
+    volumes:
+      - velox-uploads:/data/uploads
+
+  web:
+    build: ./web
+    container_name: velox-web
+    restart: always
+    depends_on:
+      - server
+    networks:
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.velox-web.rule=Host(`velox.irfan-apps.online`)"
+      - "traefik.http.routers.velox-web.entrypoints=https"
+      - "traefik.http.routers.velox-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.velox-web.loadbalancer.server.port=80"
+      - "coolify.managed=true"
+
+networks:
+  coolify:
+    external: true
+
+volumes:
+  velox-uploads:

@@ -94,6 +94,7 @@ export const api = {
   postStatus: (pid: string, status: string, summary: string) => req(`/projects/${pid}/status`, { method: 'POST', body: JSON.stringify({ status, summary }) }),
   patchProject: (pid: string, patch: any) => req(`/projects/${pid}`, { method: 'PATCH', body: JSON.stringify(patch) }),
   duplicateProject: (pid: string, name?: string) => req(`/projects/${pid}/duplicate`, { method: 'POST', body: JSON.stringify({ name }) }),
+  deleteProject: (pid: string) => req(`/projects/${pid}`, { method: 'DELETE' }),
 
   // attachments
   uploadFile: async (taskId: string, file: File) => {

@@ -10,7 +10,8 @@ import { runRules } from './rules.ts';
 
 export type VeloxEvent =
   | 'task.created' | 'task.updated' | 'status.changed' | 'task.deleted'
-  | 'comment.added' | 'project.at_risk' | 'milestone.completed' | 'status_update.posted';
+  | 'comment.added' | 'project.at_risk' | 'milestone.completed' | 'status_update.posted'
+  | 'project.deleted';
 
 export async function emit(workspaceId: string, event: VeloxEvent, payload: any, actorId?: string) {
   // 1. realtime

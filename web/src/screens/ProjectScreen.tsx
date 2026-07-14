@@ -23,6 +23,11 @@ export function ProjectScreen() {
   const filtN = s.statusFilter ? Object.keys(s.statusFilter).filter((k) => s.statusFilter![k]).length : 0;
   const stKeys = ['mut', 'prog', 'risk', 'bad', 'done'];
   const readOnly = ['GUEST', 'EXEC_VIEWER'].includes(s.myRoles[s.ws] || '');
+  const canDelete = ['OWNER', 'ADMIN'].includes(s.myRoles[s.ws] || '');
+  const delProject = () => {
+    if (!window.confirm(`Delete project "${proj.name}"? This permanently removes all of its tasks, sections and history.`)) return;
+    s.deleteProject(proj.id).catch((e: any) => s.pushToast(e?.message || 'Delete failed', 'bad'));
+  };
 
   // Real project avatars: owner + members who have tasks assigned in this project.
   const assignees = Array.from(new Set(s.tasks.filter((t) => t.pid === proj.id && t.a).map((t) => t.a as string)));
@@ -64,6 +69,21 @@ export function ProjectScreen() {
               </div>
             )}
           </div>
+          {canDelete && (
+            <div style={{ position: 'relative' }}>
+              <Hover onClick={() => s.set((x) => ({ projMenuOpen: !x.projMenuOpen, shareOpen: false }))} title="Project actions" style={{ width: 27, height: 27, borderRadius: 8, border: '1px solid var(--line)', display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--txt2)', flex: 'none' }} hover={{ background: 'var(--hover)' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8" /><circle cx="12" cy="12" r="1.8" /><circle cx="19" cy="12" r="1.8" /></svg>
+              </Hover>
+              {s.projMenuOpen && (
+                <div style={{ position: 'absolute', top: 32, right: 0, width: 190, background: 'var(--glass)', backdropFilter: 'blur(14px)', border: '1px solid var(--line)', borderRadius: 12, boxShadow: 'var(--sh3)', padding: 5, zIndex: 70, animation: 'vpop .15s ease' }}>
+                  <Hover onClick={delProject} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 9px', borderRadius: 8, cursor: 'pointer', fontSize: 12, fontWeight: 600, color: 'var(--bdT)' }} hover={{ background: 'var(--bdB)' }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14" /></svg>
+                    Delete project
+                  </Hover>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

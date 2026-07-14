@@ -12,3 +12,6 @@ web/dist/
 .env
 .env.*
 !.env.example
+
+# production compose contains real secrets — keep it local (see docker-compose.prod.example.yml)
+docker-compose.prod.yml

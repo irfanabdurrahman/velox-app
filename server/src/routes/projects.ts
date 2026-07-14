@@ -75,6 +75,15 @@ export function registerProjectRoutes(app: Express) {
     res.json({ id: pr.id, name: pr.name, code: pr.code, cat: pr.categoryId, ws: pr.workspaceId, owner: pr.ownerId, st: pr.st, prog: pr.prog, due: pr.due, color: pr.color, privacy: pr.privacy, archived: pr.archived });
   }));
 
+  // ---- delete a whole project (permanent; cascades to tasks/sections/etc) --
+  app.delete('/api/projects/:pid', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfProject(req.params.pid);
+    await assertCan(req.user.id, ws, 'ADMIN');
+    const pr = await prisma.project.delete({ where: { id: req.params.pid } });
+    emit(ws, 'project.deleted', { projectId: pr.id, name: pr.name }, req.user.id);
+    res.json({ ok: true });
+  }));
+
   // ---- duplicate a whole project (optionally as template) -----------------
   app.post('/api/projects/:pid/duplicate', requireAuth, h(async (req: any, res) => {
     const ws = await workspaceOfProject(req.params.pid);
