@@ -10,11 +10,11 @@ export function MyTasks() {
   useLang(); // re-render on language switch
   const uid = s.user?.id;
   const [moveFor, setMoveFor] = useState<string | null>(null);
-  const mine = s.tasks.filter((t) => t.a === uid && !t.ms && t.s !== null);
-
   // Quick-add tasks land in the "Belum diatur" inbox project (code INBX) and
   // surface here as a triage group until they're moved to a real project.
+  // Inbox tasks show even without a date — quick add often has no due yet.
   const inboxPids = new Set(s.projects.filter((p) => p.code === INBOX_CODE).map((p) => p.id));
+  const mine = s.tasks.filter((t) => t.a === uid && !t.ms && (t.s !== null || inboxPids.has(t.pid)));
   const inboxTasks = mine.filter((t) => inboxPids.has(t.pid) && t.st !== 'done');
   const sorted = mine.filter((t) => !(inboxPids.has(t.pid) && t.st !== 'done'));
 
@@ -96,7 +96,7 @@ export function MyTasks() {
                         {p?.code || ''}
                       </span>
                     )}
-                    <span style={{ fontSize: 10.5, fontWeight: 700, color: !done && e < TODAY ? 'var(--bdT)' : 'var(--txt3)', flex: 'none' }}>{fmt(e)}</span>
+                    <span style={{ fontSize: 10.5, fontWeight: 700, color: !done && t2.e != null && e < TODAY ? 'var(--bdT)' : 'var(--txt3)', flex: 'none' }}>{t2.e != null ? fmt(e) : '—'}</span>
                   </Hover>
                   {g.inbox && moveFor === t2.id && (
                     <div style={{ marginTop: 5, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: 9, animation: 'vup .15s ease' }}>
