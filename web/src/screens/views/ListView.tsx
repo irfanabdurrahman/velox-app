@@ -239,16 +239,18 @@ export function ListView() {
             const on = !!s.listSel[t.id];
             const labels = t.lbl || [];
             return (
-              <Hover key={it.key} style={{ display: 'grid', gridTemplateColumns: gridCols, height: rh, alignItems: 'center', borderBottom: '1px solid var(--line2)', fontSize: 12.5, background: on ? 'var(--accS)' : 'transparent' }} hover={{ background: 'var(--hover)' }}>
+              <Hover key={it.key} style={{ display: 'grid', gridTemplateColumns: gridCols, minHeight: rh, alignItems: 'center', borderBottom: '1px solid var(--line2)', fontSize: 12.5, background: on ? 'var(--accS)' : 'transparent' }} hover={{ background: 'var(--hover)' }}>
                 <span onClick={(e) => { e.stopPropagation(); s.set((x) => ({ listSel: { ...x.listSel, [t.id]: !x.listSel[t.id] } })); }} style={{ display: 'grid', placeItems: 'center', cursor: 'pointer', height: '100%' }}>
                   <span style={{ width: 14, height: 14, borderRadius: 4, border: `1.5px solid ${on ? 'var(--acc)' : 'var(--txt3)'}`, background: on ? 'var(--acc)' : 'transparent', display: 'grid', placeItems: 'center' }}>
                     {on && <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="4"><path d="M5 13l4 4L19 7" /></svg>}
                   </span>
                 </span>
-                <span onClick={() => s.openTask(t.id)} style={{ padding: '0 8px', fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {t.ms && <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--msC)"><path d="M12 2l6 10-6 10-6-10z" /></svg>}
-                  {t.name}
-                  {kidsN > 0 && <span style={{ fontSize: 10, color: 'var(--txt3)', fontWeight: 600 }}>⌥ {kidsN}</span>}
+                {/* Long names wrap onto up to 2 lines (Excel-style) instead of being
+                    clipped — the row (minHeight above) grows to fit. */}
+                <span onClick={() => s.openTask(t.id)} style={{ padding: '6px 8px', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: 6, minWidth: 0 }}>
+                  {t.ms && <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--msC)" style={{ flex: 'none', marginTop: 3 }}><path d="M12 2l6 10-6 10-6-10z" /></svg>}
+                  <span style={{ fontWeight: 500, textAlign: 'left', lineHeight: 1.25, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}>{t.name}</span>
+                  {kidsN > 0 && <span style={{ fontSize: 10, color: 'var(--txt3)', fontWeight: 600, flex: 'none', marginTop: 2 }}>⌥ {kidsN}</span>}
                 </span>
                 <span onClick={(e) => openCellMenu(t.id, 'av', e)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                   {t.a ? <>

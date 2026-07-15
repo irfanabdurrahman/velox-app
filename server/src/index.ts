@@ -134,7 +134,7 @@ app.get('/api/bootstrap', requireAuth, h(async (req, res) => {
   const [me, workspaces, categories, projects, tasks, notifs, memberships, myDms, sections, customFields, statusUpdates] = await Promise.all([
     prisma.user.findUnique({ where: { id: uid } }),
     prisma.workspace.findMany({ where: { id: { in: wsIds } } }),
-    prisma.category.findMany(),
+    prisma.category.findMany({ where: { workspaceId: { in: wsIds } }, orderBy: { ord: 'asc' } }),
     prisma.project.findMany({ where: projWhere }),
     // stable ordering; exclude trashed
     prisma.task.findMany({ where: { project: { workspaceId: { in: wsIds }, deletedAt: null, isTemplate: false }, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }, { id: 'asc' }], include: { assignees: true, watchers: true, homes: true } }),
@@ -171,7 +171,7 @@ app.get('/api/bootstrap', requireAuth, h(async (req, res) => {
     memberships: memberships.map((m) => ({ userId: m.userId, ws: m.workspaceId, role: m.role })),
     myRoles: roleByUser[uid] || {},
     workspaces,
-    categories,
+    categories: categories.map((c) => ({ id: c.id, label: c.label, color: c.color, ord: c.ord, ws: c.workspaceId })),
     projects: projects.map((p) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy, shareToken: p.shareToken ?? null })),
     templates: (await prisma.project.findMany({ where: { workspaceId: { in: wsIds }, isTemplate: true, deletedAt: null } })).map((p) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy })),
     tasks: tasks.map(taskDTO),
@@ -439,7 +439,7 @@ app.post('/api/projects', requireAuth, h(async (req, res) => {
   await assertCan(req.user!.id, p.data.ws, 'MANAGER');
   const d = p.data;
   const created = await prisma.project.create({
-    data: { id: nanoid(10), name: d.name, code: d.code || 'NP', categoryId: d.cat || 'dt', workspaceId: d.ws, ownerId: d.owner || req.user!.id, st: d.st || 'mut', prog: d.prog ?? 0, due: d.due ?? null, color: d.color || '#6366F1' },
+    data: { id: nanoid(10), name: d.name, code: d.code || 'NP', categoryId: d.cat || null, workspaceId: d.ws, ownerId: d.owner || req.user!.id, st: d.st || 'mut', prog: d.prog ?? 0, due: d.due ?? null, color: d.color || '#6366F1' },
   });
   res.json({ id: created.id, name: created.name, code: created.code, cat: created.categoryId, ws: created.workspaceId, owner: created.ownerId, st: created.st, prog: created.prog, due: created.due, color: created.color });
 }));
@@ -486,6 +486,27 @@ app.post('/api/workspaces', requireAuth, h(async (req, res) => {
   });
   await prisma.membership.create({ data: { userId: req.user!.id, workspaceId: ws.id, role: 'OWNER' } });
   res.json(ws);
+}));
+
+// Permanent, cascading delete — requires OWNER and typing the workspace name
+// back exactly (GitHub-repo-delete pattern) so it can't be fat-fingered.
+const wsDeleteSchema = z.object({ confirmName: z.string() });
+app.delete('/api/workspaces/:id', requireAuth, h(async (req, res) => {
+  const ws = await prisma.workspace.findUnique({ where: { id: req.params.id } });
+  if (!ws) throw new HttpError(404, 'workspace not found');
+  await assertCan(req.user!.id, ws.id, 'OWNER');
+  const p = wsDeleteSchema.safeParse(req.body);
+  if (!p.success) return bad(res, p.error);
+  if (p.data.confirmName !== ws.name) throw new HttpError(400, 'confirmation text does not match the workspace name');
+  await prisma.$transaction([
+    // Goal/KeyResult and OAuth grants reference workspaceId without a DB-level FK,
+    // so they need an explicit sweep — everything else cascades from Workspace.
+    prisma.goal.deleteMany({ where: { workspaceId: ws.id } }),
+    prisma.oAuthCode.deleteMany({ where: { workspaceId: ws.id } }),
+    prisma.oAuthToken.deleteMany({ where: { workspaceId: ws.id } }),
+    prisma.workspace.delete({ where: { id: ws.id } }),
+  ]);
+  res.json({ ok: true });
 }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));

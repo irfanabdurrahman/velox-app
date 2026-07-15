@@ -20,7 +20,7 @@ const writeErr = (prefix: string, e: any) => {
   return `${prefix} — ${m || 'server rejected the change'}`;
 };
 
-export type Toast = { id: number; txt: string; kind: string };
+export type Toast = { id: number; txt: string; kind: string; act?: { label: string; go: () => void } };
 
 export interface VState {
   // ---- session/data ----
@@ -150,15 +150,20 @@ export interface VState {
   setView: (v: View) => void;
   setZoom: (z: Zoom) => void;
   cycleTheme: () => void;
-  pushToast: (txt: string, kind?: string) => void;
+  pushToast: (txt: string, kind?: string, act?: { label: string; go: () => void }) => void;
   openTask: (id: string) => void;
   loadDetail: (id: string) => void;
   addTask: (name: string, pid?: string, par?: string | null, due?: number | null, patch?: Partial<Task>) => string;
   updateTask: (id: string, patch: Partial<Task>, toast?: string) => void;
   deleteTask: (id: string) => void;
   createProject: (p: Partial<Project>) => Promise<Project>;
+  ensureInbox: (ws: string) => Promise<Project>;
+  moveTask: (id: string, pid: string) => Promise<void>;
   deleteProject: (pid: string) => Promise<void>;
   patchProjectMeta: (pid: string, patch: any, toast?: string) => Promise<void>;
+  createCategory: (ws: string, label: string) => Promise<void>;
+  renameCategory: (id: string, label: string) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   markAllRead: () => void;
   markRead: (id: string) => void;
   autoSchedule: () => void;
@@ -368,10 +373,10 @@ export const useStore = create<VState>((set, get) => ({
     set({ theme: next });
   },
 
-  pushToast: (txt, kind = 'ok') => {
+  pushToast: (txt, kind = 'ok', act) => {
     const id = ++nid;
-    set((s) => ({ toasts: [...s.toasts, { id, txt, kind }] }));
-    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 3600);
+    set((s) => ({ toasts: [...s.toasts, { id, txt, kind, act }] }));
+    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), act ? 6000 : 3600);
   },
 
   openTask: (id) => {
@@ -451,6 +456,39 @@ export const useStore = create<VState>((set, get) => ({
     const created = await api.createProject(p);
     set((s) => ({ projects: [...s.projects, created] }));
     return created;
+  },
+
+  // Quick-add holding project ("Belum diatur", code INBX) — get or lazily create.
+  ensureInbox: async (ws) => {
+    const existing = get().projects.find((p) => p.ws === ws && p.code === 'INBX');
+    if (existing) return existing;
+    const created: Project = await api.ensureInboxProject(ws);
+    set((s) => (s.projects.some((p) => p.id === created.id) ? {} : { projects: [...s.projects, created] }));
+    return created;
+  },
+
+  moveTask: async (id, pid) => {
+    const r = await api.moveTask(id, pid);
+    const by = new Map<string, Task>(((r.tasks || []) as Task[]).map((t) => [t.id, t]));
+    if (by.size) set((s) => ({ tasks: s.tasks.map((t) => (by.has(t.id) ? { ...t, ...by.get(t.id)! } : t)) }));
+  },
+
+  createCategory: async (ws, label) => {
+    const created = await api.createCategory(ws, label);
+    set((s) => ({ categories: [...s.categories, created] }));
+  },
+
+  renameCategory: async (id, label) => {
+    const updated = await api.updateCategory(id, { label });
+    set((s) => ({ categories: s.categories.map((c) => (c.id === id ? updated : c)) }));
+  },
+
+  deleteCategory: async (id) => {
+    await api.deleteCategory(id);
+    set((s) => ({
+      categories: s.categories.filter((c) => c.id !== id),
+      projects: s.projects.map((p) => (p.cat === id ? { ...p, cat: null } : p)),
+    }));
   },
 
   // Permanently delete a project and scrub all of its state locally.

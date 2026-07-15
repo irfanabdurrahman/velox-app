@@ -41,13 +41,30 @@ export function Admin() {
   const s = useStore();
   const [audit, setAudit] = useState<{ loading: boolean; error: string | null; rows: any[] }>({ loading: true, error: null, rows: [] });
   const [exporting, setExporting] = useState(false);
+  const [delOpen, setDelOpen] = useState(false);
+  const [delConfirm, setDelConfirm] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const adVA = seg(s.adminView === 'admin');
   const adVM = seg(s.adminView === 'member');
 
   const wsName = (s.workspaces.find((w) => w.id === s.ws) || ({} as any)).name || '';
   const canAdmin = ['OWNER', 'ADMIN'].includes(s.myRoles[s.ws] || '');
+  const isOwner = (s.myRoles[s.ws] || '') === 'OWNER';
   const online = s.online[s.ws] || [];
+
+  const doDeleteWorkspace = async () => {
+    if (delConfirm !== wsName || deleting) return;
+    setDeleting(true);
+    try {
+      await api.deleteWorkspace(s.ws, delConfirm);
+      s.pushToast(`"${wsName}" deleted`);
+      setDelOpen(false); setDelConfirm('');
+      await s.bootstrap(); // reconciles s.ws to a workspace that still exists
+    } catch (e: any) {
+      s.pushToast(e?.message || 'Failed to delete workspace', 'bad');
+    } finally { setDeleting(false); }
+  };
 
   useEffect(() => {
     if (!['OWNER', 'ADMIN'].includes(s.myRoles[s.ws] || '')) { setAudit({ loading: false, error: null, rows: [] }); return; }
@@ -192,6 +209,56 @@ export function Admin() {
           </div>
         )}
       </div>
+
+      {isOwner && (
+        <div style={{ marginTop: 22 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, marginBottom: 9, color: 'var(--bdT)' }}>Danger zone</div>
+          <div style={{ background: 'var(--card)', border: '1px solid var(--bdB)', borderRadius: 14, padding: '15px 17px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 700 }}>Delete this workspace</div>
+                <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 2 }}>
+                  Permanently deletes <strong>{wsName}</strong> and everything in it — projects, tasks, chat, integrations. This cannot be undone.
+                </div>
+              </div>
+              {!delOpen && (
+                <span onClick={() => setDelOpen(true)} style={{ fontSize: 11, fontWeight: 700, color: 'var(--bdT)', background: 'var(--bdB)', border: '1px solid var(--bdT)', borderRadius: 8, padding: '7px 14px', cursor: 'pointer', flex: 'none', whiteSpace: 'nowrap' }}>
+                  Delete workspace
+                </span>
+              )}
+            </div>
+            {delOpen && (
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--line2)' }}>
+                <div style={{ fontSize: 11.5, marginBottom: 8 }}>Type <strong>{wsName}</strong> to confirm.</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    value={delConfirm}
+                    onChange={(e) => setDelConfirm(e.target.value)}
+                    placeholder={wsName}
+                    autoFocus
+                    style={{ flex: 1, fontSize: 12.5, padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 8, background: 'var(--bg)', color: 'var(--txt)' }}
+                  />
+                  <span onClick={() => { setDelOpen(false); setDelConfirm(''); }} style={{ fontSize: 11, fontWeight: 700, color: 'var(--txt2)', background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 8, padding: '8px 14px', cursor: 'pointer', flex: 'none' }}>
+                    Cancel
+                  </span>
+                  <span
+                    onClick={doDeleteWorkspace}
+                    style={{
+                      fontSize: 11, fontWeight: 700, color: '#fff',
+                      background: delConfirm === wsName ? 'var(--bd)' : 'var(--muB)',
+                      borderRadius: 8, padding: '8px 14px', flex: 'none',
+                      cursor: delConfirm === wsName && !deleting ? 'pointer' : 'default',
+                      opacity: deleting ? 0.6 : 1,
+                    }}
+                  >
+                    {deleting ? 'Deleting…' : 'Permanently delete'}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

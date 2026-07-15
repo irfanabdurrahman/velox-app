@@ -14,20 +14,42 @@ export interface ApiKeyRequest extends Request {
   apiKeyId?: string;
 }
 
-// Express middleware: resolve a non-revoked ApiKey from the Bearer token, attach
-// workspaceId/scopes/apiKeyId to the request, bump lastUsedAt. 401 on any failure.
+// Points MCP clients at OAuth discovery metadata on a 401, per RFC 9728 —
+// lets Claude.ai (and other spec-compliant clients) find /api/oauth/* on their own.
+function unauthorized(req: ApiKeyRequest, res: Response, message: string) {
+  const base = (process.env.CORS_ORIGIN || 'http://localhost').split(',')[0].trim();
+  res.setHeader('WWW-Authenticate', `Bearer resource_metadata="${base}/.well-known/oauth-protected-resource"`);
+  return res.status(401).json({ error: message });
+}
+
+// Express middleware: resolve a non-revoked ApiKey OR OAuthToken from the Bearer
+// token (both share the `vlx_` prefix family), attach workspaceId/scopes/apiKeyId
+// to the request, bump lastUsedAt. 401 on any failure.
 export async function apiKeyAuth(req: ApiKeyRequest, res: Response, next: NextFunction) {
   try {
     const hdr = req.headers.authorization || '';
     const token = hdr.startsWith('Bearer ') ? hdr.slice(7).trim() : '';
-    if (!token || !token.startsWith('vlx_')) return res.status(401).json({ error: 'missing or invalid API key' });
-    const key = await prisma.apiKey.findUnique({ where: { keyHash: hashApiKey(token) } });
-    if (!key || key.revoked) return res.status(401).json({ error: 'invalid or revoked API key' });
-    req.workspaceId = key.workspaceId;
-    req.scopes = (key.scopes as string[]) || [];
-    req.apiKeyId = key.id;
-    await prisma.apiKey.update({ where: { id: key.id }, data: { lastUsedAt: new Date() } }).catch(() => {});
-    next();
+    if (!token || !token.startsWith('vlx_')) return unauthorized(req, res, 'missing or invalid API key');
+    const tokenHash = hashApiKey(token);
+
+    const key = await prisma.apiKey.findUnique({ where: { keyHash: tokenHash } });
+    if (key && !key.revoked) {
+      req.workspaceId = key.workspaceId;
+      req.scopes = (key.scopes as string[]) || [];
+      req.apiKeyId = key.id;
+      await prisma.apiKey.update({ where: { id: key.id }, data: { lastUsedAt: new Date() } }).catch(() => {});
+      return next();
+    }
+
+    const oauth = await prisma.oAuthToken.findUnique({ where: { accessTokenHash: tokenHash } });
+    if (oauth && !oauth.revoked && oauth.accessExpiresAt > new Date()) {
+      req.workspaceId = oauth.workspaceId;
+      req.scopes = (oauth.scopes as string[]) || [];
+      req.apiKeyId = oauth.id;
+      return next();
+    }
+
+    return unauthorized(req, res, 'invalid, expired or revoked token');
   } catch {
     res.status(500).json({ error: 'internal error' });
   }

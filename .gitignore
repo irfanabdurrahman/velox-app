@@ -15,3 +15,4 @@ web/dist/
 
 # production compose contains real secrets — keep it local (see docker-compose.prod.example.yml)
 docker-compose.prod.yml
+.pre-migration-backups/

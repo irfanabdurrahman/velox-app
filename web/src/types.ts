@@ -1,8 +1,8 @@
 export type Member = { n: string; c: string; role: string; email: string };
 export type Workspace = { id: string; name: string; color: string; ini: string; meta: string };
-export type Category = { id: string; label: string };
+export type Category = { id: string; label: string; color?: string | null; ord?: number; ws: string };
 export type Project = {
-  id: string; name: string; code: string; cat: string; ws: string;
+  id: string; name: string; code: string; cat: string | null; ws: string;
   owner: string; st: string; prog: number; due: number | null; color: string;
   privacy?: string; shareToken?: string | null;
 };

@@ -86,3 +86,17 @@ export const refreshCookieOpts = {
   path: '/api/auth',
   maxAge: REFRESH_TTL_DAYS * 864e5,
 };
+
+// Short-lived token bridging the OAuth /authorize login step to the consent step
+// (carried as a hidden form field, not a cookie — never sent anywhere else).
+const OAUTH_PENDING_TTL = 600; // 10 minutes
+
+export function signOAuthPending(userId: string) {
+  return jwt.sign({ sub: userId, purpose: 'oauth_pending' }, ACCESS_SECRET, { expiresIn: OAUTH_PENDING_TTL });
+}
+
+export function verifyOAuthPending(token: string): string {
+  const payload = jwt.verify(token, ACCESS_SECRET) as any;
+  if (payload.purpose !== 'oauth_pending') throw new Error('wrong token purpose');
+  return payload.sub as string;
+}

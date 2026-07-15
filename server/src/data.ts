@@ -22,12 +22,14 @@ export const members: Record<string, { n: string; c: string; role: string; email
   HW: { n: 'Haryo Wibowo', c: '#334155', role: 'Executive Viewer', email: 'haryo.w@company.co.id' },
 };
 
+// Categories are workspace-scoped now — each row needs its own id (Category.id
+// has no @default in raw createMany, so these are minted explicitly) and ws.
 export const categories = [
-  { id: 'dt', label: 'Digital Transformation' },
-  { id: 'sf', label: 'Smart Factory' },
-  { id: 'infra', label: 'Infrastructure' },
-  { id: 'kaizen', label: 'Kaizen / QCC' },
-  { id: 'it', label: 'IT Operations' },
+  { id: 'dt', label: 'Digital Transformation', color: '#0EA5E9', workspaceId: 'dx', ord: 0 },
+  { id: 'sf', label: 'Smart Factory', color: '#10B981', workspaceId: 'dx', ord: 1 },
+  { id: 'infra', label: 'Infrastructure', color: '#6366F1', workspaceId: 'dx', ord: 2 },
+  { id: 'kaizen', label: 'Kaizen / QCC', color: '#F59E0B', workspaceId: 'dx', ord: 3 },
+  { id: 'it', label: 'IT Operations', color: '#64748B', workspaceId: 'it', ord: 0 },
 ];
 
 export const workspaces = [

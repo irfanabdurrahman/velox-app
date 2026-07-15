@@ -62,6 +62,7 @@ model Workspace {
 
   memberships Membership[]
   projects    Project[]
+  categories  Category[]
   channels    ChatChannel[]
   apiKeys     ApiKey[]
   webhooks    Webhook[]
@@ -82,10 +83,18 @@ model Membership {
   @@index([workspaceId])
 }
 
+// Portfolio grouping, scoped to a single workspace and fully user-managed
+// (create/rename/delete/reorder) — replaces the old fixed global 5-category list.
 model Category {
-  id       String    @id
-  label    String
-  projects Project[]
+  id          String    @id @default(cuid())
+  label       String
+  color       String?
+  ord         Int       @default(0)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+  projects    Project[]
+
+  @@index([workspaceId])
 }
 
 model Project {
@@ -94,8 +103,8 @@ model Project {
   code        String
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId String
-  category    Category  @relation(fields: [categoryId], references: [id])
-  categoryId  String
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId  String?
   owner       User?     @relation("ProjectOwner", fields: [ownerId], references: [id])
   ownerId     String?
   st          String    @default("mut")
@@ -481,4 +490,52 @@ model KeyResult {
   projectId String? // optional link to a project for auto-progress
 
   @@index([goalId])
+}
+
+// ---- OAuth 2.1 authorization server (lets remote MCP clients like Claude.ai
+// Connectors authenticate a real Velox user via browser login + consent,
+// instead of a manually-pasted API key). PKCE (S256) is mandatory; clients are
+// registered dynamically per RFC 7591 since Claude.ai has no pre-shared client id.
+model OAuthClient {
+  id           String   @id @default(cuid())
+  clientName   String?
+  redirectUris Json // string[] — exact-match allowlist checked on /authorize and /token
+  createdAt    DateTime @default(now())
+
+  codes  OAuthCode[]
+  tokens OAuthToken[]
+}
+
+model OAuthCode {
+  code          String      @id
+  client        OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId      String
+  userId        String
+  workspaceId   String
+  scopes        Json // string[]
+  redirectUri   String
+  codeChallenge String // PKCE S256 challenge from the /authorize request
+  expiresAt     DateTime
+  used          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  @@index([clientId])
+}
+
+model OAuthToken {
+  id               String      @id @default(cuid())
+  accessTokenHash  String      @unique
+  refreshTokenHash String?     @unique
+  client           OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId         String
+  userId           String
+  workspaceId      String
+  scopes           Json // string[]
+  accessExpiresAt  DateTime
+  refreshExpiresAt DateTime?
+  revoked          Boolean     @default(false)
+  createdAt        DateTime    @default(now())
+
+  @@index([clientId])
+  @@index([userId])
 }

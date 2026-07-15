@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { prMeta } from '../lib/meta';
 import { Hover } from './Hover';
-import { aiReplyFor, aiCreateFromNL, aiErrText, nlFromServer, parseNL, fallbackProject, isRiskIntent, RiskCard, type NL } from '../screens/AiPage';
+import { aiReplyFor, aiCreateFromNL, aiErrText, nlFromServer, parseNL, isRiskIntent, RiskCard, type NL } from '../screens/AiPage';
 import { api } from '../api';
 
 const isCreateIntent = (txt: string) => {
@@ -108,7 +108,7 @@ export function AiPanel() {
       const nlA = nl.assignee ? s.members[nl.assignee]?.n : 'Unassigned';
       const nlD = nl.dueTxt || 'No due date';
       const nlP = nl.pr ? prMeta(nl.pr).t : 'Medium';
-      const nlPr = nl.proj ? nl.proj.name : (fallbackProject(s)?.name || 'No project yet');
+      const nlPr = nl.proj ? nl.proj.name : '📥 Belum diatur';
       return (
         <div key={i} style={{ border: '1px solid var(--acc2)', background: 'var(--accS)', borderRadius: 12, padding: 11, marginBottom: 9 }}>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'var(--accT)', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>Parsed task preview</div>

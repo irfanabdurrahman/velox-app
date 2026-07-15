@@ -108,12 +108,13 @@ export function nlFromServer(r: any, raw: string): NL {
   };
 }
 
-// Default target project: the open project (if it belongs to the current
-// workspace), else the first project of the current workspace.
-export function fallbackProject(s: VState): Project | undefined {
-  const cur = s.proj(s.projectId);
-  if (cur && cur.ws === s.ws) return cur;
-  return s.projects.find((p) => p.ws === s.ws);
+// Quick-add holding project ("Belum diatur", code INBX): tasks whose target
+// project isn't stated land here and get triaged from My Tasks later.
+export const INBOX_CODE = 'INBX';
+// NLChips project-picker sentinel for "Belum diatur" (the inbox may not exist yet).
+export const INBOX_SENTINEL = '__inbox__';
+export function inboxProjOf(s: VState, ws: string): Project | undefined {
+  return s.projects.find((p) => p.ws === ws && p.code === INBOX_CODE);
 }
 
 const isCreateIntent = (txt: string) => {
@@ -160,12 +161,15 @@ function aiSend(raw: string) {
 }
 
 // aiCreateFromNL (line 3198)
-export function aiCreateFromNL(nl: NL) {
+export async function aiCreateFromNL(nl: NL) {
   const s = useStore.getState();
-  const target = nl.proj || fallbackProject(s);
-  if (!target) { s.pushToast('No project in this workspace yet', 'bad'); return; }
-  s.addTask(nl.title, target.id, null, nl.due ?? undefined, { a: nl.assignee || null, pr: nl.pr || 'med' });
-  s.pushToast('Task created in ' + target.name);
+  let target = nl.proj || inboxProjOf(s, s.ws) || null;
+  if (!target) {
+    try { target = await s.ensureInbox(s.ws); }
+    catch { s.pushToast('Gagal menyiapkan "Belum diatur"', 'bad'); return; }
+  }
+  const id = s.addTask(nl.title, target.id, null, nl.due ?? undefined, { a: nl.assignee ?? s.user?.id ?? null, pr: nl.pr || 'med' });
+  s.pushToast('Task dibuat di ' + target.name, 'ok', { label: 'Buka', go: () => useStore.getState().openTask(id) });
 }
 
 // aiAction (3183) / aiApprove (3187)
@@ -225,7 +229,7 @@ export function NLChips(props: {
   const opt = (on: boolean): React.CSSProperties => ({ fontSize: fs, fontWeight: 600, border: `1px solid ${on ? 'var(--acc)' : 'var(--line)'}`, background: on ? 'var(--accS)' : 'transparent', color: on ? 'var(--accT)' : 'var(--txt2)', borderRadius: 99, padding: pad, cursor: 'pointer' });
   const wsMemberIds = Array.from(new Set(s.memberships.filter((m) => m.ws === props.ws).map((m) => m.userId))).filter((id) => s.members[id]);
   const memberList = wsMemberIds.length ? wsMemberIds : Object.keys(s.members);
-  const projList = s.projects.filter((p) => p.ws === props.ws);
+  const wsList = s.workspaces.filter((w) => { const r = s.myRoles[w.id]; return r && r !== 'GUEST' && r !== 'EXEC_VIEWER'; });
   const proj = props.projId ? s.proj(props.projId) : null;
   const aName = props.assignee ? (s.members[props.assignee]?.n || props.assignee) : 'Unassigned';
   const prCo = props.pr === 'high' || props.pr === 'urgent' ? 'var(--waT)' : 'var(--txt2)';
@@ -239,7 +243,7 @@ export function NLChips(props: {
           <span onClick={() => props.onDue(props.due != null ? props.due + 1 : TODAY)} title="Later" style={{ cursor: 'pointer', fontWeight: 800, color: 'var(--accT)' }}>＋</span>
         </span>
         <Hover as="span" onClick={() => setOpen(open === 'pr' ? null : 'pr')} style={{ ...chip, color: prCo }} hover={{ borderColor: 'var(--acc)' }}>⚑ {prMeta(props.pr).t} ▾</Hover>
-        <Hover as="span" onClick={() => setOpen(open === 'p' ? null : 'p')} style={{ ...chip, border: '1px solid var(--acc2)', color: 'var(--accT)' }} hover={{ background: 'var(--accS)' }}>▦ {proj?.name || 'No project'} ▾</Hover>
+        <Hover as="span" onClick={() => setOpen(open === 'p' ? null : 'p')} style={{ ...chip, border: '1px solid var(--acc2)', color: 'var(--accT)' }} hover={{ background: 'var(--accS)' }}>{proj && proj.code !== INBOX_CODE ? <>▦ {proj.name}</> : <>📥 Belum diatur</>} ▾</Hover>
       </div>
       {open === 'a' && (
         <div style={flyout}>
@@ -257,11 +261,23 @@ export function NLChips(props: {
         </div>
       )}
       {open === 'p' && (
-        <div style={flyout}>
-          {projList.map((p) => (
-            <span key={p.id} onClick={() => { props.onProj(p.id); setOpen(null); }} style={opt(proj?.id === p.id)}>{p.name}</span>
-          ))}
-          {!projList.length && <span style={{ fontSize: fs, color: 'var(--txt3)' }}>No projects in this workspace</span>}
+        <div style={{ ...flyout, flexDirection: 'column', alignItems: 'stretch', gap: 7 }}>
+          <span onClick={() => { props.onProj(INBOX_SENTINEL); setOpen(null); }} style={{ ...opt(!proj || proj.code === INBOX_CODE), alignSelf: 'flex-start' }}>📥 Belum diatur</span>
+          {wsList.map((w) => {
+            const ps = s.projects.filter((p) => p.ws === w.id && p.code !== INBOX_CODE);
+            if (!ps.length) return null;
+            return (
+              <div key={w.id}>
+                <div style={{ fontSize: 9, fontWeight: 800, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.06em', margin: '1px 0 4px' }}>{w.name}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {ps.map((p) => (
+                    <span key={p.id} onClick={() => { props.onProj(p.id); setOpen(null); }} style={opt(proj?.id === p.id)}>{p.name}</span>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {!wsList.some((w) => s.projects.some((p) => p.ws === w.id && p.code !== INBOX_CODE)) && <span style={{ fontSize: fs, color: 'var(--txt3)' }}>Belum ada project — task masuk ke 📥 Belum diatur</span>}
         </div>
       )}
     </div>
@@ -464,7 +480,7 @@ function NlCard({ nl, raw }: { nl: NL; raw?: string }) {
   const effA = aOv !== undefined ? aOv : (nl.assignee ?? null);
   const effDue = dueOv !== undefined ? dueOv : (nl.due ?? null);
   const effPr = prOv !== undefined ? prOv : (nl.pr ?? 'med');
-  const effProj = (projOv ? s.proj(projOv) : null) || nl.proj || fallbackProject(s);
+  const effProj = projOv === INBOX_SENTINEL ? (inboxProjOf(s, s.ws) || null) : (projOv ? s.proj(projOv) : null) || nl.proj || inboxProjOf(s, s.ws) || null;
   const create = () => {
     if (!canWrite) return;
     aiCreateFromNL({ ...nl, assignee: effA, due: effDue, dueTxt: effDue != null ? fmt(effDue) : null, pr: effPr, proj: effProj || null });

@@ -7,6 +7,19 @@ import { emit } from '../events.ts';
 const projDTO = (p: any) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy, archived: p.archived, shareToken: p.shareToken ?? null });
 
 export function registerProjectRoutes(app: Express) {
+  // ---- quick-add inbox: per-workspace holding project ("Belum diatur") ----
+  // Identified by code INBX; created lazily so any MEMBER can quick-add without
+  // needing MANAGER rights or a pre-existing project.
+  app.post('/api/ws/:ws/inbox-project', requireAuth, h(async (req: any, res) => {
+    await assertCan(req.user.id, req.params.ws, 'MEMBER');
+    const found = await prisma.project.findFirst({ where: { workspaceId: req.params.ws, code: 'INBX', deletedAt: null, isTemplate: false, archived: false } });
+    if (found) return res.json(projDTO(found));
+    const created = await prisma.project.create({
+      data: { id: nanoid(10), name: 'Belum diatur', code: 'INBX', workspaceId: req.params.ws, ownerId: req.user.id, st: 'mut', prog: 0, color: '#64748B' },
+    });
+    res.json(projDTO(created));
+  }));
+
   // ---- sections -----------------------------------------------------------
   app.post('/api/projects/:pid/sections', requireAuth, h(async (req: any, res) => {
     await assertCan(req.user.id, await workspaceOfProject(req.params.pid), 'MEMBER');

@@ -4,6 +4,7 @@ import { nanoid } from 'nanoid';
 import { prisma, requireAuth, h, bad, HttpError, assertCan, workspaceOfTask, workspaceOfProject, accessibleWorkspaceIds, assertMember } from '../ctx.ts';
 import { taskDTO } from '../index.ts';
 import { emit } from '../events.ts';
+import { logAudit } from './authx.ts';
 
 export function registerTaskRoutes(app: Express) {
   // ---- trash / restore ----------------------------------------------------
@@ -110,6 +111,52 @@ export function registerTaskRoutes(app: Express) {
     const updated = await prisma.task.update({ where: { id: req.params.id }, data: { parentId: p.data.parentId } });
     emit(ws, 'task.updated', { task: taskDTO(updated), taskId: updated.id }, req.user.id);
     res.json(taskDTO(updated));
+  }));
+
+  // ---- move a task (and its whole subtree) to another project -------------
+  app.post('/api/tasks/:id/move', requireAuth, h(async (req: any, res) => {
+    const pid = z.string().parse(req.body?.pid);
+    const task = await prisma.task.findUnique({ where: { id: req.params.id }, select: { id: true, projectId: true, parentId: true, deletedAt: true } });
+    if (!task || task.deletedAt) throw new HttpError(404, 'task not found');
+    if (task.projectId === pid) return res.json({ ok: true, ids: [], tasks: [] });
+    const srcWs = await workspaceOfProject(task.projectId);
+    const dstWs = await workspaceOfProject(pid);
+    await assertCan(req.user.id, srcWs, 'MEMBER');
+    if (dstWs !== srcWs) await assertCan(req.user.id, dstWs, 'MEMBER');
+    // collect the descendant subtree (same walk as delete)
+    const ids = new Set<string>([task.id]);
+    let frontier = [task.id];
+    while (frontier.length) {
+      const kids = await prisma.task.findMany({ where: { parentId: { in: frontier } }, select: { id: true } });
+      frontier = kids.map((k) => k.id).filter((x) => !ids.has(x));
+      frontier.forEach((x) => ids.add(x));
+    }
+    const idArr = [...ids];
+    // sections belong to the old project; detach from a parent that stays behind
+    await prisma.task.updateMany({ where: { id: { in: idArr } }, data: { projectId: pid, sectionId: null } });
+    if (task.parentId) await prisma.task.update({ where: { id: task.id }, data: { parentId: null } });
+    // drop dependencies that now cross projects (both directions)
+    const moved = await prisma.task.findMany({ where: { id: { in: idArr } }, select: { id: true, deps: true } });
+    for (const m of moved) {
+      const deps = Array.isArray(m.deps) ? (m.deps as any[]) : [];
+      const kept = deps.filter((d) => d && ids.has(d.t));
+      if (kept.length !== deps.length) await prisma.task.update({ where: { id: m.id }, data: { deps: kept } });
+    }
+    const stay = await prisma.task.findMany({ where: { projectId: task.projectId, deletedAt: null }, select: { id: true, deps: true } });
+    for (const st of stay) {
+      const deps = Array.isArray(st.deps) ? (st.deps as any[]) : [];
+      const kept = deps.filter((d) => d && !ids.has(d.t));
+      if (kept.length !== deps.length) await prisma.task.update({ where: { id: st.id }, data: { deps: kept } });
+    }
+    const fresh = await prisma.task.findMany({ where: { id: { in: idArr } }, include: { assignees: true, watchers: true, homes: true } });
+    if (dstWs === srcWs) {
+      for (const t of fresh) emit(srcWs, 'task.updated', { task: taskDTO(t), taskId: t.id }, req.user.id);
+    } else {
+      emit(srcWs, 'task.deleted', { taskId: task.id, ids: idArr }, req.user.id);
+      for (const t of fresh) emit(dstWs, 'task.created', { task: taskDTO(t), taskId: t.id }, req.user.id);
+    }
+    logAudit(dstWs, req.user.id, 'task.moved', task.id, { from: task.projectId, to: pid, count: idArr.length });
+    res.json({ ok: true, ids: idArr, tasks: fresh.map(taskDTO) });
   }));
 
   // ---- bulk edit ----------------------------------------------------------

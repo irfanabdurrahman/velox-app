@@ -186,11 +186,10 @@ export function Onboarding() {
     }
     const name = isAi ? ((onb.desc || '').trim().slice(0, 48) || 'AI project') : (onb.tpl === 'Blank project' ? 'Untitled project' : onb.tpl);
     const code = (name.replace(/[^A-Za-z ]/g, '').split(/\s+/).filter(Boolean).map((w: string) => w[0]).join('').slice(0, 3) || 'NEW').toUpperCase();
-    const targetWs = onb.createdWs?.id || s.ws;
     setOnb({ creating: true });
     try {
       const proj = await s.createProject({
-        name, code, cat: s.categories[0]?.id || '', ws: targetWs, owner: s.user?.id || '',
+        name, code, cat: onb.cat || undefined, ws: targetWs, owner: s.user?.id || '',
         st: 'mut', prog: 0, due: null, color: ACCENT_SWATCH[s.accent] || '#6366F1',
       } as any);
       const phases: Phase[] = isAi ? onb.wbs : (TPL_PHASES[onb.tpl] || []);
@@ -209,6 +208,8 @@ export function Onboarding() {
   };
 
   const finReady = (mode === 'ai' && !!onb.wbs) || (mode === 'tpl' && !!onb.tpl);
+  const targetWs = onb.createdWs?.id || s.ws;
+  const wsCats = s.categories.filter((c) => c.ws === targetWs);
   const inputStyle = { width: '100%', background: 'var(--inputBg)', border: '1.5px solid var(--line)', borderRadius: 11, padding: '11px 13px', fontSize: 14, fontWeight: 600, color: 'var(--txt)', outline: 'none' } as const;
 
   return (
@@ -263,6 +264,16 @@ export function Onboarding() {
               <span onClick={() => setOnb({ mode: 'tpl' })} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 700, padding: 8, borderRadius: 10, cursor: 'pointer', border: `1.5px solid ${mode === 'tpl' ? 'var(--acc)' : 'var(--line)'}`, background: mode === 'tpl' ? 'var(--accS)' : 'transparent', color: mode === 'tpl' ? 'var(--accT)' : 'var(--txt2)' }}>From template</span>
               <span onClick={() => setOnb({ mode: 'ai' })} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 700, padding: 8, borderRadius: 10, cursor: 'pointer', border: `1.5px solid ${mode === 'ai' ? 'var(--acc)' : 'var(--line)'}`, background: mode === 'ai' ? 'var(--accS)' : 'transparent', color: mode === 'ai' ? 'var(--accT)' : 'var(--txt2)' }}>✦ Describe it — AI builds the plan</span>
             </div>
+
+            {wsCats.length > 0 && (
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--txt3)', marginBottom: 5 }}>Category (optional)</div>
+                <select value={onb.cat || ''} onChange={(e) => setOnb({ cat: e.target.value })} style={{ width: '100%', fontSize: 12.5, padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 9, background: 'var(--inputBg)', color: 'var(--txt)' }}>
+                  <option value="">(Uncategorized)</option>
+                  {wsCats.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                </select>
+              </div>
+            )}
 
             {mode === 'tpl' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>

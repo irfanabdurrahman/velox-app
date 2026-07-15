@@ -106,6 +106,30 @@ export function Sidebar() {
                 </div>
               );
             })}
+            {(() => {
+              const uncatPs = wsProjects.filter((p) => !p.cat);
+              if (!uncatPs.length) return null;
+              const open = !!s.openCats.__uncat;
+              return (
+                <div>
+                  <Hover onClick={() => s.set((x) => ({ openCats: { ...x.openCats, __uncat: !x.openCats.__uncat } }))} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 27, padding: '0 8px', borderRadius: 7, cursor: 'pointer', color: 'var(--txt2)' }} hover={{ background: 'var(--hover)' }}>
+                    <svg style={{ flex: 'none', transform: `rotate(${open ? 90 : 0}deg)`, transition: 'transform .15s' }} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 6l6 6-6 6" /></svg>
+                    <span style={{ flex: 1, fontSize: 11.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Uncategorized</span>
+                    <span style={{ fontSize: 10, color: 'var(--txt3)' }}>{uncatPs.length}</span>
+                  </Hover>
+                  {open && uncatPs.map((p) => {
+                    const act = s.screen === 'project' && s.projectId === p.id;
+                    return (
+                      <Hover key={p.id} onClick={() => s.set({ screen: 'project', projectId: p.id, selId: null, soId: null })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 29, padding: '0 8px 0 24px', borderRadius: 7, cursor: 'pointer', background: act ? 'var(--accS)' : 'transparent', color: act ? 'var(--accT)' : 'var(--txt2)', fontWeight: act ? 600 : 400 }} hover={{ background: act ? 'var(--accS)' : 'var(--hover)' }}>
+                        <span style={{ width: 8, height: 8, borderRadius: 3, background: p.color, flex: 'none' }} />
+                        <span style={{ flex: 1, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotFor(p.st), flex: 'none' }} />
+                      </Hover>
+                    );
+                  })}
+                </div>
+              );
+            })()}
             {!readOnly && (
               <Hover onClick={() => s.set({ onb: { step: 3, newProj: true } })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 30, padding: '0 8px 0 10px', borderRadius: 8, cursor: 'pointer', color: 'var(--accT)', fontSize: 12, fontWeight: 600, marginTop: 3 }} hover={{ background: 'var(--accS)' }}>
                 <span style={{ width: 16, height: 16, borderRadius: 5, border: '1.5px dashed var(--accT)', display: 'grid', placeItems: 'center', fontSize: 11, lineHeight: 1, flex: 'none' }}>＋</span>
