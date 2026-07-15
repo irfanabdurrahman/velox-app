@@ -57,6 +57,8 @@ export interface VState {
 
   // ---- navigation ----
   sb: boolean;
+  mobile: boolean; // viewport < 760px — sidebar becomes an off-canvas drawer
+  mobNav: boolean; // mobile drawer open
   ws: string;
   screen: Screen;
   view: View;
@@ -208,6 +210,8 @@ export const useStore = create<VState>((set, get) => ({
   density: (localStorage.getItem('velox-density') as 'comf' | 'comp') || 'comf',
 
   sb: false,
+  mobile: typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 759px)').matches,
+  mobNav: false,
   ws: 'dx',
   screen: 'project',
   view: 'gantt',
@@ -361,7 +365,7 @@ export const useStore = create<VState>((set, get) => ({
     set({ authed: false, user: null, ready: true });
   },
 
-  go: (screen) => set({ screen, avMenu: false, wsMenu: false, notifOpen: false }),
+  go: (screen) => set({ screen, avMenu: false, wsMenu: false, notifOpen: false, mobNav: false }),
   setView: (v) => set({ screen: 'project', view: v }),
   setZoom: (z) => set({ zoom: z }),
 

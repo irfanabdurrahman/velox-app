@@ -15,16 +15,28 @@ export function Topbar() {
   const meOnline = !!(u && online.includes(u.id));
   const onlineCluster = online.filter((id) => id !== u?.id).slice(0, 4);
 
+  const mobile = s.mobile;
   return (
-    <div style={{ height: 50, flex: 'none', background: 'var(--panel)', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: 10, padding: '0 14px', zIndex: 25, position: 'relative' }}>
+    <div style={{ height: 50, flex: 'none', background: 'var(--panel)', borderBottom: '1px solid var(--line)', display: 'flex', alignItems: 'center', gap: mobile ? 7 : 10, padding: mobile ? '0 10px' : '0 14px', zIndex: 25, position: 'relative' }}>
+      {mobile && (
+        <Hover onClick={() => s.set({ mobNav: true })} title="Menu" style={{ width: 34, height: 34, borderRadius: 9, display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--txt2)', border: '1px solid var(--line)', flex: 'none' }} hover={{ background: 'var(--hover)' }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </Hover>
+      )}
+      {mobile ? (
+        <Hover onClick={() => s.set({ palette: true, palQ: '', palIdx: 0 })} title={t('search.placeholder')} style={{ width: 34, height: 34, borderRadius: 9, display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--txt2)', border: '1px solid var(--line)', flex: 'none' }} hover={{ background: 'var(--hover)' }}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
+        </Hover>
+      ) : (
       <Hover onClick={() => s.set({ palette: true, palQ: '', palIdx: 0 })} style={{ width: 340, maxWidth: '34vw', display: 'flex', alignItems: 'center', gap: 8, background: 'var(--inputBg)', border: '1px solid var(--line)', borderRadius: 9, padding: '6.5px 11px', color: 'var(--txt3)', fontSize: 12.5, cursor: 'pointer' }} hover={{ border: '1px solid var(--txt3)' }}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg>
         <span style={{ flex: 1 }}>{t('search.placeholder')}</span>
         <span style={{ fontSize: 9.5, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 5, padding: '1px 5px', color: 'var(--txt3)', fontWeight: 600 }}>⌘K</span>
       </Hover>
+      )}
 
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }} onMouseDown={(e) => e.stopPropagation()}>
-        {online.length > 0 && (
+        {!mobile && online.length > 0 && (
           <div title={online.map((id) => s.members[id]?.n || id).join(', ')} style={{ display: 'flex', alignItems: 'center', gap: 7, marginRight: 2 }}>
             <span style={{ display: 'flex' }}>
               {onlineCluster.map((id, i) => (
@@ -37,8 +49,8 @@ export function Topbar() {
             </span>
           </div>
         )}
-        <Hover onClick={() => s.set((x) => ({ quickAdd: !x.quickAdd, qaText: '', qaPreview: null }))} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--acc)', color: '#fff', fontSize: 12, fontWeight: 600, borderRadius: 9, padding: '7px 13px', cursor: 'pointer', boxShadow: '0 1px 3px var(--ring)', transition: 'transform .15s' }} hover={{ transform: 'translateY(-1px)' }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>{t('action.quickadd')}
+        <Hover onClick={() => s.set((x) => ({ quickAdd: !x.quickAdd, qaText: '', qaPreview: null }))} title={t('action.quickadd')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--acc)', color: '#fff', fontSize: 12, fontWeight: 600, borderRadius: 9, padding: mobile ? '7px 10px' : '7px 13px', cursor: 'pointer', boxShadow: '0 1px 3px var(--ring)', transition: 'transform .15s' }} hover={{ transform: 'translateY(-1px)' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>{!mobile && t('action.quickadd')}
         </Hover>
 
         <Hover onClick={() => s.set((x) => ({ aiPanel: !x.aiPanel }))} title="Velox AI" style={{ width: 31, height: 31, borderRadius: 9, display: 'grid', placeItems: 'center', cursor: 'pointer', background: s.aiPanel ? 'var(--accS)' : 'transparent', color: s.aiPanel ? 'var(--accT)' : 'var(--txt2)', border: '1px solid var(--line)' }} hover={{ background: 'var(--accS)' }}>

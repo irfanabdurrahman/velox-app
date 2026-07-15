@@ -7,7 +7,8 @@ import { t, useLang } from '../lib/i18n';
 export function Sidebar() {
   const s = useStore();
   useLang(); // re-render on language switch
-  const mini = s.sb;
+  const mobile = s.mobile;
+  const mini = !mobile && s.sb; // the drawer always shows full labels
   const sbW = mini ? 58 : 236;
   const sbLbl = mini ? 0 : 1;
   const ws = s.workspaces.find((w) => w.id === s.ws) || s.workspaces[0];
@@ -33,8 +34,11 @@ export function Sidebar() {
     );
   };
 
+  const shellStyle: React.CSSProperties = mobile
+    ? { position: 'fixed', left: 0, top: 0, bottom: 0, width: 250, zIndex: 90, transform: s.mobNav ? 'translateX(0)' : 'translateX(-104%)', transition: 'transform .22s cubic-bezier(.2,.8,.3,1)', boxShadow: s.mobNav ? 'var(--sh3)' : 'none' }
+    : { width: sbW, flex: 'none', transition: 'width .18s cubic-bezier(.4,0,.2,1)' };
   return (
-    <div style={{ width: sbW, flex: 'none', background: 'var(--panel)', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', transition: 'width .18s cubic-bezier(.4,0,.2,1)', overflow: 'hidden', zIndex: 30 }}>
+    <div style={{ background: 'var(--panel)', borderRight: '1px solid var(--line)', display: 'flex', flexDirection: 'column', overflow: 'hidden', zIndex: 30, ...shellStyle }}>
       {/* logo */}
       <div style={{ padding: '12px 10px 8px', display: 'flex', alignItems: 'center', gap: 8, flex: 'none' }}>
         <div style={{ width: 26, height: 26, borderRadius: 7, background: 'linear-gradient(135deg,var(--acc),var(--acc2))', display: 'grid', placeItems: 'center', flex: 'none', boxShadow: 'var(--sh1)' }}>
@@ -96,7 +100,7 @@ export function Sidebar() {
                   {open && ps.map((p) => {
                     const act = s.screen === 'project' && s.projectId === p.id;
                     return (
-                      <Hover key={p.id} onClick={() => s.set({ screen: 'project', projectId: p.id, selId: null, soId: null })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 29, padding: '0 8px 0 24px', borderRadius: 7, cursor: 'pointer', background: act ? 'var(--accS)' : 'transparent', color: act ? 'var(--accT)' : 'var(--txt2)', fontWeight: act ? 600 : 400 }} hover={{ background: act ? 'var(--accS)' : 'var(--hover)' }}>
+                      <Hover key={p.id} onClick={() => s.set({ screen: 'project', projectId: p.id, selId: null, soId: null, mobNav: false })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 29, padding: '0 8px 0 24px', borderRadius: 7, cursor: 'pointer', background: act ? 'var(--accS)' : 'transparent', color: act ? 'var(--accT)' : 'var(--txt2)', fontWeight: act ? 600 : 400 }} hover={{ background: act ? 'var(--accS)' : 'var(--hover)' }}>
                         <span style={{ width: 8, height: 8, borderRadius: 3, background: p.color, flex: 'none' }} />
                         <span style={{ flex: 1, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotFor(p.st), flex: 'none' }} />
@@ -120,7 +124,7 @@ export function Sidebar() {
                   {open && uncatPs.map((p) => {
                     const act = s.screen === 'project' && s.projectId === p.id;
                     return (
-                      <Hover key={p.id} onClick={() => s.set({ screen: 'project', projectId: p.id, selId: null, soId: null })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 29, padding: '0 8px 0 24px', borderRadius: 7, cursor: 'pointer', background: act ? 'var(--accS)' : 'transparent', color: act ? 'var(--accT)' : 'var(--txt2)', fontWeight: act ? 600 : 400 }} hover={{ background: act ? 'var(--accS)' : 'var(--hover)' }}>
+                      <Hover key={p.id} onClick={() => s.set({ screen: 'project', projectId: p.id, selId: null, soId: null, mobNav: false })} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 29, padding: '0 8px 0 24px', borderRadius: 7, cursor: 'pointer', background: act ? 'var(--accS)' : 'transparent', color: act ? 'var(--accT)' : 'var(--txt2)', fontWeight: act ? 600 : 400 }} hover={{ background: act ? 'var(--accS)' : 'var(--hover)' }}>
                         <span style={{ width: 8, height: 8, borderRadius: 3, background: p.color, flex: 'none' }} />
                         <span style={{ flex: 1, fontSize: 12, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
                         <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotFor(p.st), flex: 'none' }} />
@@ -153,9 +157,9 @@ export function Sidebar() {
           <svg style={{ flex: 'none' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
           <span style={{ opacity: sbLbl, whiteSpace: 'nowrap' }}>{t('nav.settings')}</span>
         </Hover>
-        <Hover onClick={() => s.set((x) => ({ sb: !x.sb }))} style={{ display: 'flex', alignItems: 'center', gap: 9, height: 30, padding: '0 8px', borderRadius: 8, cursor: 'pointer', color: 'var(--txt3)', fontSize: 12.5 }} hover={{ background: 'var(--hover)' }}>
+        <Hover onClick={() => (mobile ? s.set({ mobNav: false }) : s.set((x) => ({ sb: !x.sb })))} style={{ display: 'flex', alignItems: 'center', gap: 9, height: 30, padding: '0 8px', borderRadius: 8, cursor: 'pointer', color: 'var(--txt3)', fontSize: 12.5 }} hover={{ background: 'var(--hover)' }}>
           <svg style={{ flex: 'none', transform: `rotate(${mini ? 180 : 0}deg)`, transition: 'transform .2s' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" /></svg>
-          <span style={{ opacity: sbLbl, whiteSpace: 'nowrap' }}>{t('action.collapse')}</span>
+          <span style={{ opacity: sbLbl, whiteSpace: 'nowrap' }}>{t(mobile ? 'action.close' : 'action.collapse')}</span>
         </Hover>
       </div>
     </div>
@@ -168,7 +172,7 @@ function WsMenu() {
     <div style={{ position: 'absolute', top: '100%', left: 8, right: 8, marginTop: 4, background: 'var(--glass)', backdropFilter: 'blur(14px)', border: '1px solid var(--line)', borderRadius: 12, boxShadow: 'var(--sh3)', padding: 5, zIndex: 60, animation: 'vpop .15s ease' }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.07em', padding: '6px 9px 4px' }}>Workspaces</div>
       {s.workspaces.map((w) => (
-        <Hover key={w.id} onClick={() => { const first = s.projects.find((p) => p.ws === w.id); s.set({ ws: w.id, wsMenu: false, projectId: first ? first.id : s.projectId, screen: first ? s.screen : 'home' }); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, cursor: 'pointer', background: w.id === s.ws ? 'var(--accS)' : 'transparent' }} hover={{ background: 'var(--hover)' }}>
+        <Hover key={w.id} onClick={() => { const first = s.projects.find((p) => p.ws === w.id); s.set({ ws: w.id, wsMenu: false, projectId: first ? first.id : s.projectId, screen: first ? s.screen : 'home', mobNav: false }); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 8px', borderRadius: 8, cursor: 'pointer', background: w.id === s.ws ? 'var(--accS)' : 'transparent' }} hover={{ background: 'var(--hover)' }}>
           <span style={{ width: 22, height: 22, borderRadius: 6, background: w.color, color: '#fff', display: 'grid', placeItems: 'center', fontSize: 10, fontWeight: 800, flex: 'none' }}>{w.ini}</span>
           <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600 }}>{w.name}</span>
           <span style={{ fontSize: 10.5, color: 'var(--txt3)' }}>{w.meta}</span>

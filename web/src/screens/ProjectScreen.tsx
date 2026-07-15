@@ -81,11 +81,11 @@ export function ProjectScreen() {
       {/* project header */}
       <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 16px 0' }}>
         <span style={{ width: 24, height: 24, borderRadius: 7, background: proj.color, display: 'grid', placeItems: 'center', color: '#fff', fontSize: 9, fontWeight: 800, flex: 'none' }}>{proj.code}</span>
-        <span style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: '-.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{proj.name}</span>
-        <span style={{ fontSize: 10.5, fontWeight: 700, padding: '3px 9px', borderRadius: 99, background: projStB, color: projStT, flex: 'none' }}>{stLabelProj}</span>
-        <span style={{ fontSize: 11, color: 'var(--txt3)', flex: 'none' }}>{catL}</span>
+        <span style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: '-.01em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, flex: '0 1 auto' }}>{proj.name}</span>
+        {!s.mobile && <span style={{ fontSize: 10.5, fontWeight: 700, padding: '3px 9px', borderRadius: 99, background: projStB, color: projStT, flex: 'none' }}>{stLabelProj}</span>}
+        {!s.mobile && <span style={{ fontSize: 11, color: 'var(--txt3)', flex: 'none' }}>{catL}</span>}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, flex: 'none' }} onMouseDown={(e) => e.stopPropagation()}>
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: s.mobile ? 'none' : 'flex' }}>
             {avShown.map((id, i) => <span key={id} title={s.members[id]?.n || id} style={{ width: 24, height: 24, borderRadius: '50%', background: s.members[id]?.c || '#6366F1', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 8.5, fontWeight: 800, border: '2px solid var(--bg)', marginLeft: i === 0 ? 0 : -7 }}>{id}</span>)}
             {avExtra > 0 && <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--muB)', color: 'var(--muT)', display: 'grid', placeItems: 'center', fontSize: 8.5, fontWeight: 800, border: '2px solid var(--bg)', marginLeft: -7 }}>+{avExtra}</span>}
           </div>
@@ -145,7 +145,7 @@ export function ProjectScreen() {
       </div>
 
       {/* toolbar */}
-      <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 7, rowGap: 7, padding: '9px 16px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap' }} onMouseDown={(e) => e.stopPropagation()}>
+      <div style={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 7, rowGap: 7, padding: s.mobile ? '9px 10px' : '9px 16px', borderBottom: '1px solid var(--line)', flexWrap: s.mobile ? 'nowrap' : 'wrap', overflowX: s.mobile ? 'auto' : 'visible', WebkitOverflowScrolling: 'touch' as any }} onMouseDown={(e) => e.stopPropagation()}>
         <div style={{ display: 'flex', background: 'var(--muB)', borderRadius: 9, padding: 2, flex: 'none' }}>
           {tab('Gantt', 'gantt', () => s.setView('gantt'))}
           {tab('List', 'list', () => s.setView('list'))}

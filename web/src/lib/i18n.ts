@@ -18,6 +18,7 @@ const dict: Record<string, { en: string; id: string }> = {
   'nav.trash': { en: 'Trash', id: 'Sampah' },
   'nav.settings': { en: 'Settings', id: 'Pengaturan' },
   'action.collapse': { en: 'Collapse', id: 'Ciutkan' },
+  'action.close': { en: 'Close', id: 'Tutup' },
   'action.quickadd': { en: 'Quick add', id: 'Tambah cepat' },
   'action.share': { en: 'Share', id: 'Bagikan' },
   'action.newProject': { en: 'New project', id: 'Proyek baru' },

@@ -69,8 +69,15 @@ function Shell() {
   const screen = useStore((s) => s.screen);
   useInteractions();
   useRealtime();
-  // phones/small tablets: start with the sidebar collapsed to icon rail
-  useEffect(() => { if (window.innerWidth < 760) useStore.getState().set({ sb: true }); }, []);
+  // phones/small tablets: the sidebar becomes an off-canvas drawer (see Sidebar)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 759px)');
+    const apply = () => useStore.getState().set({ mobile: mq.matches, mobNav: false });
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+  const drawerOpen = useStore((s) => s.mobile && s.mobNav);
 
   return (
     <div
@@ -78,6 +85,7 @@ function Shell() {
       style={{ position: 'fixed', inset: 0, display: 'flex', background: 'var(--bg)', color: 'var(--txt)', fontSize: 14, overflow: 'hidden', fontFamily: 'Inter, system-ui, sans-serif' }}
     >
       <Sidebar />
+      {drawerOpen && <div onMouseDown={() => closeMenus({ mobNav: false })} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.45)', zIndex: 88, animation: 'vfade .18s ease' }} />}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
         <Topbar />
         {screen === 'project' && <ProjectScreen />}
