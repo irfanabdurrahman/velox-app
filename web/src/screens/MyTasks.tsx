@@ -64,7 +64,7 @@ export function MyTasks() {
               return (
                 <div key={t2.id} style={{ marginBottom: 6 }}>
                   <Hover
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '9px 13px', boxShadow: 'var(--sh1)' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: s.mobile ? '12px 13px' : '9px 13px', boxShadow: 'var(--sh1)' }}
                     hover={{ borderColor: 'var(--acc)' }}
                   >
                     <span

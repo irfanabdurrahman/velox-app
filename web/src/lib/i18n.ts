@@ -17,6 +17,7 @@ const dict: Record<string, { en: string; id: string }> = {
   'nav.reports': { en: 'Reports', id: 'Laporan' },
   'nav.trash': { en: 'Trash', id: 'Sampah' },
   'nav.settings': { en: 'Settings', id: 'Pengaturan' },
+  'nav.menu': { en: 'Menu', id: 'Menu' },
   'action.collapse': { en: 'Collapse', id: 'Ciutkan' },
   'action.close': { en: 'Close', id: 'Tutup' },
   'action.quickadd': { en: 'Quick add', id: 'Tambah cepat' },

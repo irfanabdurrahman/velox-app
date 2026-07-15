@@ -101,7 +101,7 @@ export function QuickAdd() {
 
   return (
     <div onMouseDown={close} style={{ position: 'fixed', inset: 0, zIndex: 85 }}>
-      <div onMouseDown={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 56, right: 'clamp(12px,calc(100vw - 520px),170px)', width: 'min(480px,90vw)', background: 'var(--glass)', backdropFilter: 'blur(18px)', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--sh3)', padding: 14, animation: 'vpop .16s ease' }}>
+      <div onMouseDown={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 56, right: s.mobile ? 10 : 'clamp(12px,calc(100vw - 520px),170px)', left: s.mobile ? 10 : undefined, width: s.mobile ? 'auto' : 'min(480px,90vw)', background: 'var(--glass)', backdropFilter: 'blur(18px)', border: '1px solid var(--line)', borderRadius: 16, boxShadow: 'var(--sh3)', padding: 14, animation: 'vpop .16s ease' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 9 }}>
           <span style={{ fontSize: 12.5, fontWeight: 700 }}>Quick add task</span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 9.5, fontWeight: 700, color: 'var(--accT)', background: 'var(--accS)', borderRadius: 99, padding: '2px 8px' }}><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.9 5.7L19.6 10l-5.7 1.9L12 17.6l-1.9-5.7L4.4 10l5.7-1.9z" /></svg>{s.aiEnabled ? 'AI parses EN / ID' : 'Parses EN / ID'}</span>

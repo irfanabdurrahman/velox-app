@@ -34,7 +34,10 @@ export function Gantt() {
   }, [ppd]);
 
   // on narrow (tablet) viewports, start with the grid collapsed
-  useEffect(() => { if (window.innerWidth < 1100) setGridCollapsed(true); }, []);
+  useEffect(() => {
+    if (window.innerWidth < 1100) setGridCollapsed(true);
+    if (window.innerWidth < 760 && useStore.getState().zoom === 'day') useStore.getState().setZoom('week');
+  }, []);
 
   if (rowsArr.length === 0) return <GanttEmpty />;
 

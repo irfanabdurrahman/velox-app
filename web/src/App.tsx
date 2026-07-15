@@ -18,6 +18,7 @@ import { SlideOver } from './components/SlideOver';
 import { AiPanel } from './components/AiPanel';
 import { CommandPalette } from './components/CommandPalette';
 import { QuickAdd } from './components/QuickAdd';
+import { BottomNav } from './components/BottomNav';
 import { Onboarding } from './components/Onboarding';
 import { Toasts } from './components/Toasts';
 import { Present } from './screens/Present';
@@ -78,6 +79,7 @@ function Shell() {
     return () => mq.removeEventListener('change', apply);
   }, []);
   const drawerOpen = useStore((s) => s.mobile && s.mobNav);
+  const mobile = useStore((s) => s.mobile);
 
   return (
     <div
@@ -86,7 +88,7 @@ function Shell() {
     >
       <Sidebar />
       {drawerOpen && <div onMouseDown={() => closeMenus({ mobNav: false })} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.45)', zIndex: 88, animation: 'vfade .18s ease' }} />}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0, paddingBottom: mobile ? 'calc(52px + env(safe-area-inset-bottom))' : 0 }}>
         <Topbar />
         {screen === 'project' && <ProjectScreen />}
         {screen === 'home' && <Home />}
@@ -100,6 +102,7 @@ function Shell() {
         {screen === 'trash' && <Trash />}
         {screen === 'reports' && <Reports />}
       </div>
+      <BottomNav />
       <SlideOver />
       <AiPanel />
       <CommandPalette />
