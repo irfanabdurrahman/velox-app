@@ -122,6 +122,18 @@ test('project: all six views render', async () => {
   }
 });
 
+test('project: Export Excel (Gantt) downloads a valid xlsx', async () => {
+  await page.getByTitle('Project actions').click();
+  const waiting = page.waitForEvent('download');
+  await page.getByText('Export Excel (Gantt)', { exact: true }).click();
+  const download = await waiting;
+  expect(download.suggestedFilename()).toMatch(/gantt\.xlsx$/);
+  const path = await download.path();
+  const { statSync } = await import('fs');
+  expect(statSync(path!).size).toBeGreaterThan(4000);
+  await expect(page.getByText('Excel Gantt exported').first()).toBeVisible();
+});
+
 test('quick add: undated task lands in Belum diatur, assigned to me', async () => {
   await page.getByText('Quick add', { exact: true }).click();
   const ta = page.getByPlaceholder(/Ketik apa saja/);

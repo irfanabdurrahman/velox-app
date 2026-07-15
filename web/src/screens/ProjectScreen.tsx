@@ -50,6 +50,7 @@ export function ProjectScreen() {
     catch (e: any) { s.pushToast(e?.message || 'Save failed', 'bad'); }
   };
   const exportCsv = () => { closeMenu(); api.downloadProjectCsv(proj.id, proj.name).then(() => s.pushToast('CSV exported')).catch((e: any) => s.pushToast(e?.message || 'Export failed', 'bad')); };
+  const exportXlsx = () => { closeMenu(); api.downloadProjectXlsx(proj.id, proj.name).then(() => s.pushToast('Excel Gantt exported')).catch((e: any) => s.pushToast(e?.message || 'Export failed', 'bad')); };
   const archiveProj = () => {
     closeMenu();
     if (!window.confirm(`Archive "${proj.name}"? It moves out of the sidebar; unarchive any time from the Trash screen.`)) return;
@@ -126,6 +127,7 @@ export function ProjectScreen() {
                     <Hover onClick={duplicateProj} style={mi} hover={{ background: 'var(--hover)' }}>Duplicate project</Hover>
                     <Hover onClick={saveTemplate} style={mi} hover={{ background: 'var(--hover)' }}>Save as template</Hover>
                     <Hover onClick={exportCsv} style={mi} hover={{ background: 'var(--hover)' }}>Export CSV</Hover>
+                    <Hover onClick={exportXlsx} style={mi} hover={{ background: 'var(--hover)' }}>Export Excel (Gantt)</Hover>
                     <Hover onClick={archiveProj} style={mi} hover={{ background: 'var(--hover)' }}>Archive project</Hover>
                   </>}
                   {canDelete && <>

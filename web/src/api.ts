@@ -114,6 +114,19 @@ export const api = {
   addKr: (goalId: string, kr: any) => req(`/goals/${goalId}/krs`, { method: 'POST', body: JSON.stringify(kr) }),
   patchKr: (id: string, patch: any) => req(`/krs/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
   delKr: (id: string) => req(`/krs/${id}`, { method: 'DELETE' }),
+  downloadProjectXlsx: async (pid: string, name: string) => {
+    const headers: Record<string, string> = {};
+    const token = getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch(`/api/projects/${pid}/export.xlsx`, { headers, credentials: 'include' });
+    if (!res.ok) throw new Error('export failed');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `${name.replace(/[^\w.-]+/g, '_')}-gantt.xlsx`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  },
   downloadProjectCsv: async (pid: string, name: string) => {
     const headers: Record<string, string> = {};
     const token = getToken();

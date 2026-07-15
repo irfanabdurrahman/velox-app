@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { nanoid } from 'nanoid';
 import { prisma, requireAuth, h, bad, HttpError, assertCan, assertMember, workspaceOfProject, EP } from '../ctx.ts';
 import { emit } from '../events.ts';
+import { buildGanttXlsx } from '../xlsxGantt.ts';
 
 const projDTO = (p: any) => ({ id: p.id, name: p.name, code: p.code, cat: p.categoryId, ws: p.workspaceId, owner: p.ownerId, st: p.st, prog: p.prog, due: p.due, color: p.color, privacy: p.privacy, archived: p.archived, shareToken: p.shareToken ?? null });
 
@@ -154,6 +155,27 @@ export function registerProjectRoutes(app: Express) {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${proj.code || 'project'}-export.csv"`);
     res.send('\ufeff' + lines.join('\n'));
+  }));
+
+  // ---- rich Gantt-chart Excel export ---------------------------------------
+  app.get('/api/projects/:pid/export.xlsx', requireAuth, h(async (req: any, res) => {
+    const ws = await workspaceOfProject(req.params.pid);
+    await assertMember(req.user.id, ws);
+    const [proj, tasks, users] = await Promise.all([
+      prisma.project.findUnique({ where: { id: req.params.pid } }),
+      prisma.task.findMany({ where: { projectId: req.params.pid, deletedAt: null }, orderBy: [{ ord: 'asc' }, { createdAt: 'asc' }] }),
+      prisma.user.findMany({ select: { id: true, name: true } }),
+    ]);
+    if (!proj) throw new HttpError(404, 'not found');
+    const uName = Object.fromEntries(users.map((u) => [u.id, u.name]));
+    const buf = await buildGanttXlsx(
+      { name: proj.name, code: proj.code, color: proj.color },
+      tasks.map((t) => ({ id: t.id, name: t.name, parentId: t.parentId, assigneeId: t.assigneeId, pr: t.pr, pg: t.pg, st: t.st, s: t.s, e: t.e, ms: t.ms, crit: t.crit, ord: t.ord ?? 0, createdAt: t.createdAt })),
+      uName,
+    );
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${(proj.code || 'project')}-gantt.xlsx"`);
+    res.send(buf);
   }));
 
   // ---- duplicate a whole project (optionally as template) -----------------
