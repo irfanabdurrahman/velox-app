@@ -60,6 +60,32 @@ test('mobile: drawer sidebar opens, navigates, and closes', async ({ page }) => 
   expect(errs, `Uncaught errors:\n${errs.join('\n')}`).toEqual([]);
 });
 
+test('mobile: gantt task table expands and collapses on-screen', async ({ page, request }) => {
+  // an empty gantt shows only the empty state — seed one dated task via API
+  const base = process.env.BASE_URL || 'https://velox.irfan-apps.online';
+  const login = await request.post(`${base}/api/auth/login`, { data: { email: EMAIL, password: PASSWORD } });
+  const { token } = await login.json();
+  const auth = { Authorization: `Bearer ${token}` };
+  const created = await (await request.post(`${base}/api/tasks`, { headers: auth, data: { pid: 'itsm', name: 'E2E gantt probe', a: null, pr: 'med', pg: 0, st: 'mut', s: 16, e: 22, ms: false, crit: false, lbl: [], deps: [] } })).json();
+  try {
+    await page.goto('/');
+    await page.getByPlaceholder('Email').fill(EMAIL);
+    await page.getByPlaceholder('Password', { exact: true }).fill(PASSWORD);
+    await page.getByText('Masuk →').click();
+    await expect(page.getByTitle('Menu')).toBeVisible({ timeout: 20_000 });
+    await page.getByTitle('Menu').click();
+    await page.getByText('IT Operations', { exact: true }).click();
+    await page.getByText('ITSM Rollout', { exact: true }).click();
+    // grid starts collapsed on phones; the chevron must stay tappable both ways
+    await page.getByTitle('Expand table', { exact: true }).click();
+    await expect(page.getByTitle('Collapse table', { exact: true })).toBeInViewport();
+    await page.getByTitle('Collapse table', { exact: true }).click();
+    await expect(page.getByTitle('Expand table', { exact: true })).toBeInViewport();
+  } finally {
+    await request.delete(`${base}/api/tasks/${created.id}`, { headers: auth });
+  }
+});
+
 test('pwa: manifest, icons and service worker are served', async ({ request }) => {
   const base = process.env.BASE_URL || 'https://velox.irfan-apps.online';
   const man = await request.get(`${base}/manifest.webmanifest`);

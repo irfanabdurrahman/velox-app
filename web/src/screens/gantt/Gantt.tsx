@@ -6,6 +6,13 @@ import { stMeta, prMeta, dotFor, stBar, rowHFor, barHFor } from '../../lib/meta'
 import { fmt, TODAY, dateOf } from '../../lib/dates';
 import { Hover } from '../../components/Hover';
 
+
+// Grid geometry: phones get a narrow Task/Who/Status table so the timeline and
+// the collapse chevron stay on-screen; other fields live in the slide-over.
+const mobGridW = () => Math.min(window.innerWidth - 84, 330);
+const gridColsFor = (mob: boolean, extra: boolean) =>
+  mob ? `${mobGridW() - 150}px 34px 92px 24px` : '252px 34px 92px 30px 62px 62px 40px' + (extra ? ' 84px' : '') + ' 24px';
+
 export function Gantt() {
   const s = useStore();
   // tablet polish: the left grid can collapse to a narrow strip so the timeline
@@ -18,8 +25,8 @@ export function Gantt() {
   const rowsH = Math.max((rowsArr.length + 1) * rh, 420);
   // the extra column now shows the project's FIRST custom field (honest data, no fabricated cost)
   const projCF = s.customFields.find((f) => f.pid === s.projectId) || null;
-  const gw = gridCollapsed ? 46 : 596 + (s.extraCol ? 84 : 0);
-  const gridCols = '252px 34px 92px 30px 62px 62px 40px' + (s.extraCol ? ' 84px' : '') + ' 24px';
+  const gw = gridCollapsed ? 46 : s.mobile ? mobGridW() : 596 + (s.extraCol ? 84 : 0);
+  const gridCols = gridColsFor(s.mobile, s.extraCol);
   const todayX = Math.round((TODAY + 0.5) * ppd);
 
   // scroll to today on mount; on zoom change keep the date under the viewport's left edge anchored
@@ -158,12 +165,12 @@ export function Gantt() {
                   <span style={{ padding: '7px 10px', borderRight: '1px solid var(--line2)' }}>Task</span>
                   <span style={{ padding: '7px 5px', borderRight: '1px solid var(--line2)' }}>Who</span>
                   <span style={{ padding: '7px 8px', borderRight: '1px solid var(--line2)' }}>Status</span>
-                  <span style={{ padding: '7px 6px', borderRight: '1px solid var(--line2)' }} title="Priority">Pri</span>
+                  {!s.mobile && <><span style={{ padding: '7px 6px', borderRight: '1px solid var(--line2)' }} title="Priority">Pri</span>
                   <span style={{ padding: '7px 8px', borderRight: '1px solid var(--line2)' }}>Start</span>
                   <span style={{ padding: '7px 8px', borderRight: '1px solid var(--line2)' }}>Due</span>
                   <span style={{ padding: '7px 8px', borderRight: '1px solid var(--line2)' }}>%</span>
                   {s.extraCol && <span style={{ padding: '7px 8px', borderRight: '1px solid var(--line2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={projCF ? projCF.name : 'Custom field'}>{projCF ? projCF.name : 'Custom'}</span>}
-                  <span onClick={(e) => { e.stopPropagation(); const turningOn = !s.extraCol; s.set((x) => ({ extraCol: !x.extraCol })); s.pushToast(turningOn ? (projCF ? `Column added: ${projCF.name}` : 'Column added — this project has no custom fields yet') : 'Column removed'); }} onMouseDown={(e) => e.stopPropagation()} style={{ padding: '7px 8px', cursor: 'pointer', color: 'var(--txt3)', fontSize: 12 }} title="Toggle custom-field column">＋</span>
+                  <span onClick={(e) => { e.stopPropagation(); const turningOn = !s.extraCol; s.set((x) => ({ extraCol: !x.extraCol })); s.pushToast(turningOn ? (projCF ? `Column added: ${projCF.name}` : 'Column added — this project has no custom fields yet') : 'Column removed'); }} onMouseDown={(e) => e.stopPropagation()} style={{ padding: '7px 8px', cursor: 'pointer', color: 'var(--txt3)', fontSize: 12 }} title="Toggle custom-field column">＋</span></>}
                   {toggleBtn}
                 </div>
                 {rowsArr.map((rw, i) => <GridRow key={rw.t.id} rw={rw} i={i} rh={rh} rowsArr={rowsArr} cfId={projCF ? projCF.id : null} />)}
@@ -302,7 +309,7 @@ function GridRow({ rw, i, rh, rowsArr, cfId }: { rw: any; i: number; rh: number;
   const pr = prMeta(t.pr);
   const late = !t.ms && t.st !== 'done' && (t.e ?? 0) < TODAY;
   const editing = s.editId === t.id;
-  const gridCols = '252px 34px 92px 30px 62px 62px 40px' + (s.extraCol ? ' 84px' : '') + ' 24px';
+  const gridCols = gridColsFor(s.mobile, s.extraCol);
   const nameFw = rw.hasKids ? 700 : (rw.lvl > 0 ? 400 : 500);
   const bg = s.selId === t.id ? 'var(--accS)' : (rw.hasKids ? 'var(--bg)' : 'transparent');
   const pgTxt = t.ms ? '—' : ((rw.hasKids && !t.pg) ? '' + s.parProg(t.id) : '' + t.pg);
@@ -341,11 +348,11 @@ function GridRow({ rw, i, rh, rowsArr, cfId }: { rw: any; i: number; rh: number;
           : (!rw.hasKids && !t.ms ? <span style={{ width: 20, height: 20, borderRadius: '50%', border: '1.5px dashed var(--txt3)', display: 'grid', placeItems: 'center', color: 'var(--txt3)', fontSize: 10 }}>+</span> : null)}
       </Hover>
       <Hover onClick={(e: any) => openMenu('st', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 8px', height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover}><span style={{ fontSize: 10.5, fontWeight: 700, padding: '2.5px 9px', borderRadius: 99, background: stStyle.b, color: stStyle.t, whiteSpace: 'nowrap' }}>{t.ms ? 'Milestone' : st.l}</span></Hover>
-      <Hover onClick={(e: any) => openMenu('pr', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 6px', height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover} title={pr.t}><svg width="12" height="12" viewBox="0 0 24 24" fill={pr.c} stroke={pr.c} strokeWidth="2" strokeLinecap="round"><path d="M4 21V4" /><path d="M4 4h12l-2.5 4L16 12H4" stroke="none" /></svg></Hover>
+      {!s.mobile && <><Hover onClick={(e: any) => openMenu('pr', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 6px', height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover} title={pr.t}><svg width="12" height="12" viewBox="0 0 24 24" fill={pr.c} stroke={pr.c} strokeWidth="2" strokeLinecap="round"><path d="M4 21V4" /><path d="M4 4h12l-2.5 4L16 12H4" stroke="none" /></svg></Hover>
       <Hover onClick={(e: any) => openMenu('ds', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 8px', color: 'var(--txt2)', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', height: '100%', display: 'flex', alignItems: 'center', fontSize: 12.5 }} hover={cellHover}>{t.s != null ? fmt(t.s) : '—'}</Hover>
       <Hover onClick={(e: any) => openMenu('de', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 8px', color: late ? 'var(--bdT)' : 'var(--txt2)', fontWeight: late ? 700 : 400, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', height: '100%', display: 'flex', alignItems: 'center', fontSize: 12.5 }} hover={cellHover}>{t.ms ? '—' : (t.e != null ? fmt(t.e) : '—')}</Hover>
       <Hover onClick={(e: any) => openMenu('pg', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 8px', color: 'var(--txt2)', fontVariantNumeric: 'tabular-nums', fontSize: 12.5, height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover}>{pgTxt}</Hover>
-      {s.extraCol && <span style={{ padding: '0 8px', color: 'var(--txt2)', fontSize: 11.5, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={cfId ? fmtCfVal(t.cf?.[cfId]) : undefined}>{cfId ? fmtCfVal(t.cf?.[cfId]) : '—'}</span>}
+      {s.extraCol && <span style={{ padding: '0 8px', color: 'var(--txt2)', fontSize: 11.5, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={cfId ? fmtCfVal(t.cf?.[cfId]) : undefined}>{cfId ? fmtCfVal(t.cf?.[cfId]) : '—'}</span>}</>}
       <span />
     </Hover>
   );
