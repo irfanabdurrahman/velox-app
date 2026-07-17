@@ -93,7 +93,11 @@
 - **Public REST API `/api/v1`** — API keys (`vlx_live_…`) with granular scopes and per-key rate limits
 - **Webhooks** with an event catalog and per-hook secrets
 - **No-code automations** — WHEN *trigger* → THEN *action* rules per workspace
-- **MCP server** for AI agents (OAuth 2.0): `list_projects`, `query_tasks`, `create_task`, `update_task`, `update_task_status`, `post_comment`, `get_risk_report`, `get_overdue_summary`
+- **MCP server** for AI agents (OAuth 2.0) — 24 tools:
+  - read: `list_projects`, `query_tasks`, `get_task_detail` (incl. comments & activity), `list_members`, `list_sections`, `list_custom_fields`, `list_goals`, `get_risk_report`, `get_overdue_summary`
+  - tasks: `create_task` (subtasks, priority, milestone, description, section), `update_task`, `update_task_status`, `move_task` (cross-project, subtree-aware), `delete_task` (30-day trash), `set_dependency` / `remove_dependency` (FS/SS/FF/SF + lag), `set_task_section`, `set_custom_field`, `post_comment`
+  - projects & OKR: `create_project`, `archive_project`, `create_goal`, `add_key_result`, `update_key_result`
+  - scopes: `projects:read/write`, `tasks:read/write`, `reports:read`, `goals:read/write`
 
 ## Architecture
 

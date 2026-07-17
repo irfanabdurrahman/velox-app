@@ -19,7 +19,7 @@ import { prisma } from '../prisma.ts';
 import { verifyPassword, signOAuthPending, verifyOAuthPending } from '../auth.ts';
 import { hashApiKey } from '../apikey.ts';
 
-const SCOPES = ['projects:read', 'tasks:read', 'tasks:write', 'reports:read'];
+const SCOPES = ['projects:read', 'projects:write', 'tasks:read', 'tasks:write', 'reports:read', 'goals:read', 'goals:write'];
 const CODE_TTL_MS = 5 * 60 * 1000;
 const ACCESS_TTL_MS = 60 * 60 * 1000;
 const REFRESH_TTL_MS = 90 * 24 * 60 * 60 * 1000;

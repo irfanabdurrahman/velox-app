@@ -9,7 +9,7 @@ import {
   Field, Chk, CopyField, Note, StateRow,
 } from './kit';
 
-const API_SCOPES = ['tasks:read', 'tasks:write', 'projects:read', 'reports:read'];
+const API_SCOPES = ['tasks:read', 'tasks:write', 'projects:read', 'projects:write', 'reports:read', 'goals:read', 'goals:write'];
 const chip: React.CSSProperties = { fontSize: 9, fontWeight: 700, borderRadius: 99, padding: '2px 8px', fontFamily: mono };
 const relDate = (v: any) => (v ? `last used ${new Date(v).toLocaleDateString()}` : 'never used');
 
