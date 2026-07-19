@@ -8,6 +8,9 @@ export default defineConfig({
   retries: 0,
   use: {
     baseURL: process.env.BASE_URL || 'https://velox.irfan-apps.online',
+    launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+      ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
+      : undefined,
     viewport: { width: 1440, height: 900 },
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',

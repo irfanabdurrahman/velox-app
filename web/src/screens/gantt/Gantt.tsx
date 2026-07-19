@@ -81,7 +81,7 @@ export function Gantt() {
       id: t.id, top: top + (rh - bh) / 2, left, w, h: bh, bg: c.bg, fill: c.fill,
       fw: done ? w : Math.round(w * t.pg / 100), lc: c.lc, ts: c.ts,
       label: t.name + (t.pg > 0 && !done ? ' · ' + t.pg + '%' : ''),
-      hasAv: !!t.a && w > 60, av: t.a || '', avBg: t.a ? s.members[t.a].c : 'transparent',
+      hasAv: !!t.a && w > 60, av: t.a || '', avBg: t.a ? (s.members[t.a]?.c || 'var(--txt3)') : 'transparent',
       sh: sel ? '0 0 0 2px var(--acc),0 6px 16px var(--ring)' : shBase, z: sel ? 3 : 2,
       sel: sel && !s.drag, showDots: s.hovId === t.id && !sel && !s.drag && !s.depDraw,
     });
@@ -344,7 +344,7 @@ function GridRow({ rw, i, rh, rowsArr, cfId }: { rw: any; i: number; rh: number;
         )}
       </span>
       <Hover onClick={(e: any) => openMenu('av', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 5px', height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover}>
-        {t.a ? <span style={{ width: 20, height: 20, borderRadius: '50%', background: s.members[t.a].c, color: '#fff', display: 'grid', placeItems: 'center', fontSize: 8, fontWeight: 800 }}>{t.a}</span>
+        {t.a ? <span title={s.members[t.a]?.n || 'Former workspace member'} style={{ width: 20, height: 20, borderRadius: '50%', background: s.members[t.a]?.c || 'var(--txt3)', color: '#fff', display: 'grid', placeItems: 'center', fontSize: 8, fontWeight: 800 }}>{s.members[t.a] ? t.a : '?'}</span>
           : (!rw.hasKids && !t.ms ? <span style={{ width: 20, height: 20, borderRadius: '50%', border: '1.5px dashed var(--txt3)', display: 'grid', placeItems: 'center', color: 'var(--txt3)', fontSize: 10 }}>+</span> : null)}
       </Hover>
       <Hover onClick={(e: any) => openMenu('st', e)} onMouseDown={(e: any) => e.stopPropagation()} style={{ padding: '0 8px', height: '100%', display: 'flex', alignItems: 'center' }} hover={cellHover}><span style={{ fontSize: 10.5, fontWeight: 700, padding: '2.5px 9px', borderRadius: 99, background: stStyle.b, color: stStyle.t, whiteSpace: 'nowrap' }}>{t.ms ? 'Milestone' : st.l}</span></Hover>
